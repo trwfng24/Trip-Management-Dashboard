@@ -1,161 +1,2812 @@
 <!doctype html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TripPilot — Quản lý chuyến đi</title>
-  <style>
-    :root { --ink:#22384a; --muted:#72808b; --line:#eadfce; --paper:#fff8ee; --card:#fffdf9; --forest:#e56845; --lime:#ffd166; --orange:#ff9b6a; --blue:#d9f0f6; --shadow:0 10px 26px rgba(115,72,37,.10); }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--ink); background:var(--paper); }
-    button { font:inherit; cursor:pointer; }
-    .login-screen{min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr;background:#f7f9f8}.login-art{background:linear-gradient(145deg,rgba(10,52,39,.74),rgba(18,96,70,.54)),url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1300&q=85') center/cover;color:#fff;padding:clamp(30px,6vw,82px);display:flex;flex-direction:column;justify-content:space-between}.login-art h1{font-size:clamp(36px,5vw,64px);max-width:560px;line-height:1.05;margin:0}.login-art p{max-width:420px;color:#dcf1e8;font-size:16px;line-height:1.6}.login-card-wrap{display:grid;place-items:center;padding:25px}.login-card{width:min(410px,100%)}.login-card h2{font-size:29px;margin:28px 0 7px}.login-card>p{color:var(--muted);margin:0 0 25px}.login-card label{display:block;font-size:13px;font-weight:800;margin:15px 0 7px}.login-card input{width:100%;padding:12px;border-radius:9px;border:1px solid #d9e2de;font:inherit;outline-color:var(--forest)}.login-card .btn{width:100%;margin-top:20px}.login-divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin:19px 0}.login-divider:before,.login-divider:after{content:"";height:1px;background:var(--line);flex:1}.google-btn{width:100%;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px;font-weight:800}.login-error{min-height:19px;color:#b03a24;font-size:12px;margin-top:8px}.app.hidden{display:none}
-    .app { min-height:100vh; display:grid; grid-template-columns:250px 1fr; }
-    .sidebar { background:#174e5c; color:#f4f8ec; padding:24px 16px; display:flex; flex-direction:column; gap:26px; }
-    .brand { display:flex; align-items:center; gap:10px; padding:0 8px; font-size:21px; font-weight:800; letter-spacing:-.8px; }
-    .brand-mark { display:grid; place-items:center; width:31px; height:31px; border-radius:50% 50% 50% 12%; background:var(--lime); color:#174e5c; font-size:18px; }
-    .trip-switcher { width:100%; min-height:120px; border:2px solid rgba(255,255,255,.58); background:linear-gradient(180deg,rgba(10,47,59,.05),rgba(10,47,59,.86)),url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=700&q=80') center/cover; border-radius:20px 20px 20px 6px; padding:13px; color:#fff; text-align:left; display:flex; flex-direction:column; justify-content:flex-end; }
-    .trip-switcher:hover { border-color:var(--lime); }.trip-switcher small,.sidebar-label { color:#d7eee3; font-size:11px; letter-spacing:.1em; text-transform:uppercase; font-weight:700; }
-    .trip-switcher strong { display:block; padding-top:5px; font-size:15px; text-shadow:0 1px 8px #10221d; }.trip-switcher span{font-size:11px;color:#e6f6ef;margin-top:4px}
-    nav { display:grid; gap:5px; }
-    .nav-item { width:100%; border:0; background:transparent; color:#c3d9d0; text-align:left; border-radius:10px; padding:11px 12px; display:flex; gap:11px; align-items:center; font-weight:600; }
-    .nav-item:hover,.nav-item.active { background:rgba(223,244,106,.14); color:#f4ffc2; }
-    .nav-item b { margin-left:auto; border-radius:999px; padding:2px 7px; background:var(--lime); color:#244d3e; font-size:11px; }
-    .side-bottom { margin-top:auto; border-top:1px solid rgba(255,255,255,.13); padding:18px 8px 0; color:#c3d9d0; font-size:13px; }.logout{width:100%;border:1px solid rgba(255,255,255,.2);background:transparent;color:#d7eee3;border-radius:9px;padding:9px;text-align:left;font-size:13px;font-weight:800}.logout:hover{border-color:#ffb098;color:#fff}
-    .main { min-width:0; padding:27px clamp(20px,4vw,60px) 40px; }
-    .topbar { display:flex; justify-content:space-between; align-items:center; gap:18px; margin-bottom:25px; }.topbar-start{display:flex;align-items:center;gap:10px}.mobile-menu-toggle{display:none;width:39px;height:39px;padding:0;place-items:center;font-size:18px}.mobile-sidebar-backdrop{display:none}.account-top{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800}.account-top small{display:block;color:var(--muted);font-weight:500}
-    .breadcrumb { color:var(--muted); font-size:13px; } .breadcrumb strong{color:var(--ink)}
-    .actions { display:flex; gap:10px; align-items:center; }
-    .icon-btn,.btn { border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:10px; padding:10px 14px; font-weight:700; }
-    .btn.primary { color:#fff; border-color:var(--forest); background:var(--forest); } .btn.primary:hover{background:#11563f}
-    .view { display:none; } .view.active { display:block; }
-    .hero { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; background:linear-gradient(100deg,rgba(255,245,223,.96) 0%,rgba(255,245,223,.85) 55%,rgba(255,245,223,.1)),url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1300&q=85') center/cover; border:1px solid #e9cfaa; border-radius:24px 24px 24px 7px; padding:30px; overflow:hidden; }
-    .eyebrow { color:var(--forest); text-transform:uppercase; font-size:11px; letter-spacing:.12em; font-weight:800; }
-    h1 { font-size:clamp(28px,3vw,40px); margin:6px 0 8px; letter-spacing:-1.4px; } h2 { font-size:21px; letter-spacing:-.5px; margin:0; } h3{font-size:15px;margin:0;}
-    .hero p { margin:0; color:#596b70; } .hero-actions{display:flex;flex-direction:column;align-items:flex-end;gap:10px}.status { display:inline-flex; gap:7px; align-items:center; border-radius:999px; padding:8px 11px; font-size:12px; font-weight:800; white-space:nowrap; }.status .dot{background:currentColor}.status-draft{background:#eef1f3;color:#66727a}.status-planning{background:#fff2d9;color:#a26000}.status-confirmed{background:#e6f2fb;color:#1e6391}.status-ongoing{background:#e4f5ec;color:#15744e}.status-completed{background:#f0eafa;color:#7351a5}
-    .dot { width:8px; height:8px; border-radius:50%; background:var(--forest); }
-    .stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:20px 0; }
-    .stat,.panel { background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow); border-radius:16px; }
-    .stat { padding:17px; } .stat small { display:block; color:var(--muted); margin-bottom:8px; } .stat strong { font-size:21px; letter-spacing:-.7px; } .stat .good { color:#178557; font-size:12px; margin-left:5px; }
-    .grid { display:grid; grid-template-columns:1.18fr .82fr; gap:20px; } .panel { padding:20px; } .panel-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
-    .text-link { border:0; padding:0; color:var(--forest); background:none; font-weight:800; font-size:13px; }
-    .timeline { position:relative; display:grid; gap:17px; } .timeline:before { content:""; position:absolute; left:9px; top:13px; bottom:13px; width:2px; background:#dce8e2; }
-    .event { position:relative; display:grid; grid-template-columns:28px 73px 1fr; gap:10px; align-items:start; } .event-dot { z-index:1; width:20px; height:20px; border-radius:50%; border:5px solid #c9efdf; background:var(--forest); }
-    .event time { color:var(--muted); font-size:12px; padding-top:2px; } .event p { color:var(--muted); font-size:12px; margin:3px 0 0; }
-    .progress { height:8px; border-radius:9px; background:#eaf0ed; overflow:hidden; } .progress span{display:block;height:100%;border-radius:inherit;background:var(--forest)}
-    .check-row,.document,.expense-row,.opinion { display:flex; gap:11px; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); } .check-row:last-child,.document:last-child,.expense-row:last-child,.opinion:last-child{border:0}
-    .check-row input { accent-color:var(--forest); width:17px; height:17px; } .check-row label{flex:1;font-size:13px}.check-row label.done{text-decoration:line-through;color:var(--muted)} .avatar{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:#fce3d9;color:#a44a29;font-size:10px;font-weight:800}
-    .section-title { margin:0 0 18px; } .hint{color:var(--muted);font-size:13px;margin:4px 0 0}.notifications-panel{margin-top:20px}.notification-row{display:flex;align-items:flex-start;gap:11px;padding:13px 0;border-bottom:1px solid var(--line)}.notification-row:last-child{border:0}.notification-copy{flex:1}.notification-copy p{font-size:12px;color:var(--muted);margin:4px 0 0}
-    .opinions-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px}.opinion{align-items:flex-start;padding:16px 0}.opinion-main{flex:1}.opinion h3{font-size:14px;line-height:1.45}.opinion p{margin:5px 0 0;color:var(--muted);font-size:12px}.opinion-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.opinion .row-actions{margin-left:0}.small-btn.apply{background:var(--forest);border-color:var(--forest);color:#fff}.small-btn.applied{background:#edf6f1;border-color:#d5eadc;color:var(--forest)}.inbox-head{align-items:flex-start}.inbox-count{display:inline-flex;align-items:center;gap:6px;background:#edf6f1;color:var(--forest);font-size:11px;font-weight:800;padding:5px 8px;border-radius:999px}.form-preview{margin-top:15px;padding:13px;border-radius:12px;background:#f6fbf8;border:1px dashed #bad7c9;font-size:12px;color:#527068}.form-preview b{display:block;color:var(--ink);margin-bottom:4px}.tag{padding:5px 8px;border-radius:999px;background:#edf6f1;color:var(--forest);font-size:11px;font-weight:800;white-space:nowrap}.tag.pending{background:#fff2d9;color:#a26000}.tag.reject{background:#fde8e4;color:#b03a24}.trip-card .tag.status-draft{background:#eef1f3;color:#66727a}.trip-card .tag.status-planning{background:#fff2d9;color:#a26000}.trip-card .tag.status-confirmed{background:#e6f2fb;color:#1e6391}.trip-card .tag.status-ongoing{background:#e4f5ec;color:#15744e}.trip-card .tag.status-completed{background:#f0eafa;color:#7351a5}
-    .mini-chart { display:flex; align-items:end; gap:12px; height:165px; padding:10px 2px 30px; border-bottom:1px solid var(--line); } .bar{flex:1;background:#d5eee3;border-radius:8px 8px 0 0;position:relative;min-width:32px}.bar.active{background:var(--forest)}.bar em{position:absolute;bottom:-23px;font-size:10px;color:var(--muted);font-style:normal;left:50%;transform:translateX(-50%)}
-    .tabs { display:flex; gap:7px; overflow:auto; margin-bottom:19px; }.tabs button{border:0;background:#eaf0ed;color:#61736b;border-radius:9px;padding:8px 11px;font-size:13px;font-weight:700}.tabs button.active{background:var(--forest);color:#fff}
-    .plan-day{border-left:3px solid var(--lime);padding:0 0 20px 18px;margin-left:8px}.plan-day h3{margin-bottom:9px}.plan-card{border:1px solid var(--line);border-radius:12px;padding:13px;margin-top:9px;background:#fff;display:flex;gap:12px}.time-chip{font-size:11px;font-weight:800;color:var(--forest);background:#e9f5f0;padding:5px;height:max-content;border-radius:6px}.plan-card p{margin:3px 0 0;color:var(--muted);font-size:12px}
-    .split { display:grid;grid-template-columns:1.25fr .75fr;gap:20px}.expense-row strong{font-size:13px}.expense-row small{display:block;color:var(--muted);margin-top:3px}.amount{margin-left:auto;font-weight:800}.expense-summary{background:#174e5c;color:#fff;border-radius:20px 20px 20px 6px;padding:20px}.expense-summary small{color:#cde5e8}.expense-summary strong{display:block;font-size:29px;margin:7px 0 18px}.owed{display:flex;justify-content:space-between;border-top:1px solid rgba(255,255,255,.16);padding:12px 0;font-size:13px}.owed:last-child{padding-bottom:0}.owed span:last-child{color:var(--lime);font-weight:800}
-    .doc-icon{width:38px;height:42px;border-radius:9px;background:#e5f1ff;display:grid;place-items:center;font-size:19px}.document>div:nth-child(2){flex:1}.document small{display:block;color:var(--muted);margin-top:3px;font-size:12px}.download{border:0;background:none;color:var(--forest);font-size:18px}.row-actions{display:flex;gap:5px;margin-left:auto}.small-btn{border:1px solid var(--line);background:#fff;color:var(--forest);border-radius:7px;padding:5px 7px;font-size:11px;font-weight:800}.small-btn.delete{color:#b03a24}.export-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.export-card{border:1px solid var(--line);border-radius:14px;padding:18px;background:#fff}.export-card .doc-icon{margin-bottom:15px}.export-card p{font-size:12px;color:var(--muted);min-height:35px}.export-card button{width:100%;margin-top:8px}
-    .trip-list{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.trip-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:19px;box-shadow:var(--shadow);cursor:pointer;transition:.2s}.trip-card:hover{transform:translateY(-3px);border-color:#99caba}.trip-card p{color:var(--muted);font-size:13px;margin:7px 0 16px}.trip-card footer{display:flex;justify-content:space-between;font-size:12px;color:var(--forest);font-weight:800}.modal-backdrop{position:fixed;inset:0;background:rgba(20,44,53,.52);display:none;place-items:center;padding:20px;z-index:10}.modal-backdrop.show{display:grid}.modal-card{width:min(610px,100%);background:#fffdf9;border-radius:24px 24px 24px 7px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.25)}.modal-card h2{margin:4px 0 7px}.modal-card p{color:var(--muted);font-size:13px;margin:0 0 20px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.form-grid .full{grid-column:1/-1}.form-grid label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}.form-grid input,.form-grid select,.form-grid textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:11px;font:inherit;background:#fff}.form-grid textarea{min-height:96px;resize:vertical}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}.toast{position:fixed;right:24px;bottom:24px;background:#10221d;color:#fff;padding:13px 17px;border-radius:10px;box-shadow:var(--shadow);transform:translateY(90px);opacity:0;transition:.25s;font-size:13px;font-weight:700}.toast.show{transform:translateY(0);opacity:1}
-    @media(max-width:920px){.login-screen{grid-template-columns:1fr}.login-art{min-height:280px;padding:32px}.login-art h1{font-size:38px}.app{grid-template-columns:1fr}.sidebar{display:flex;position:fixed;inset:0 auto 0 0;width:min(280px,82vw);z-index:30;transform:translateX(-105%);transition:transform .24s ease;box-shadow:12px 0 30px rgba(16,34,29,.22)}.sidebar.mobile-open{transform:translateX(0)}.mobile-sidebar-backdrop.show{display:block;position:fixed;inset:0;z-index:20;background:rgba(16,34,29,.42)}.mobile-menu-toggle{display:grid}.stat-grid{grid-template-columns:repeat(2,1fr)}.grid,.opinions-layout,.split,.trip-list{grid-template-columns:1fr}.main{padding:20px}.hero{padding:22px}.export-grid{grid-template-columns:1fr}}
-    @media(max-width:620px){.topbar,.panel-head{align-items:flex-start;flex-wrap:wrap}.hero{flex-direction:column}.hero-actions{width:100%;align-items:flex-start}.opinion{flex-wrap:wrap}.opinion-main,.notification-copy{min-width:0}.opinion-main{width:calc(100% - 38px)}.opinion>.tag{margin-left:38px}.opinion-actions{width:100%;padding-left:38px;justify-content:flex-start}.notification-row{flex-wrap:wrap}.notification-row .small-btn{margin-left:38px}h1,h2,h3,p{overflow-wrap:anywhere}}
-  </style>
-</head>
-<body>
-  <section class="login-screen" id="login-screen"><div class="login-art"><div class="brand"><span class="brand-mark">✦</span> TripPilot</div><div><div class="eyebrow" style="color:#dff46a">Leader-only travel workspace</div><h1>Chuyến đi gọn gàng, leader nhẹ đầu.</h1><p>Lên kế hoạch, gom ý kiến, quản lý chi phí và xuất thông tin cho cả nhóm — tại một nơi.</p></div><small>© 2026 TripPilot</small></div><div class="login-card-wrap"><div class="login-card"><div class="brand" style="color:#176b50"><span class="brand-mark">✦</span> TripPilot</div><h2>Chào mừng trở lại</h2><p>Đăng nhập để tiếp tục quản lý các chuyến đi của bạn.</p><label for="login-email">Email</label><input id="login-email" type="email" placeholder="leader@example.com" value="huy@trippilot.vn"><label for="login-password">Mật khẩu</label><input id="login-password" type="password" placeholder="Nhập mật khẩu" value="demo123"><button class="btn primary" onclick="login()">Đăng nhập</button><div class="login-error" id="login-error"></div><div class="login-divider">hoặc</div><button class="google-btn" onclick="login('google')">G&nbsp; Tiếp tục với Google</button><p style="font-size:12px;text-align:center;margin-top:22px">Bản mock: dùng email/mật khẩu bất kỳ để vào app.</p></div></div></section>
-  <div class="app hidden" id="app-shell">
-    <aside class="sidebar" id="sidebar">
-      <div class="brand"><span class="brand-mark">✦</span> TripPilot</div>
-      <button class="trip-switcher" id="trip-cover" data-view="trips"><small>Trip collection</small><strong id="current-trip">Đà Nẵng cuối tuần</strong><span>Quản lý tất cả chuyến đi →</span></button>
-      <nav>
-        <span class="sidebar-label">Trip workspace</span>
-        <button class="nav-item active" data-view="overview">◉ Overview</button>
-        <button class="nav-item" data-view="opinions">◌ Opinions <b>12</b></button>
-        <button class="nav-item" data-view="plan">◷ Plan</button>
-        <button class="nav-item" data-view="checklist">✓ Checklist</button>
-        <button class="nav-item" data-view="expenses">₫ Expenses</button>
-        <button class="nav-item" data-view="documents">▣ Documents</button>
-        <button class="nav-item" data-view="export">⇩ Export</button>
-      </nav>
-      <div class="side-bottom"><button class="logout" onclick="logout()">⇥ Logout</button></div>
-    </aside>
-    <main class="main">
-      <div class="topbar"><div class="topbar-start"><button class="icon-btn mobile-menu-toggle" type="button" aria-label="Mở menu" onclick="toggleSidebar()">☰</button><div class="breadcrumb">My trips / <strong id="breadcrumb-trip">Đà Nẵng cuối tuần</strong></div></div><div class="actions"><span class="account-top"><span class="avatar">HN</span><span>Huy Nguyen<small>Leader</small></span></span></div></div>
-      <section class="view" id="trips"><div class="panel-head"><div><div class="eyebrow">TripPilot</div><h1 class="section-title">Tất cả chuyến đi</h1><p class="hint">Tạo và mở workspace cho từng chuyến.</p></div><button class="btn primary" onclick="openTripModal()">＋ Tạo chuyến đi</button></div><div class="trip-list" id="trip-list"></div></section>
-      <section class="view active" id="overview">
-        <div class="hero" id="trip-hero"><div><div class="eyebrow">Trip workspace</div><h1 id="trip-title">Đà Nẵng cuối tuần</h1><p id="trip-summary">19–22 tháng 10, 2026 · 8 người · Leader: Huy Nguyen</p></div><div class="hero-actions"><span class="status status-planning" id="trip-status-badge"><i class="dot"></i><span id="trip-status">Đang lên kế hoạch</span></span><button class="btn" onclick="openTripModal('edit')">✎ Chỉnh sửa chuyến đi</button></div></div>
-        <div class="stat-grid"><div class="stat"><small>Điểm đến</small><strong id="trip-destination">Đà Nẵng</strong></div><div class="stat"><small>Đếm ngược khởi hành</small><strong id="countdown">Còn -- ngày</strong></div><div class="stat"><small>Ngân sách dự kiến</small><strong id="trip-budget">16.000.000₫</strong></div><div class="stat"><small>Đã chi</small><strong>7.850.000₫</strong><span class="good">49%</span></div></div>
-        <div class="grid"><div class="panel"><div class="panel-head"><div><h2>Timeline sắp tới</h2><p class="hint">Lịch trình đã chốt cho chuyến đi</p></div><button class="text-link" data-view="plan">Xem plan →</button></div><div class="timeline"><div class="event"><span class="event-dot"></span><time>19 Oct<br>06:30</time><div><h3>Bay đến Đà Nẵng</h3><p>Vietnam Airlines VN112 · Tân Sơn Nhất → Đà Nẵng</p></div></div><div class="event"><span class="event-dot"></span><time>19 Oct<br>09:30</time><div><h3>Nhận phòng tại Meliá Vinpearl</h3><p>Check-in, gửi hành lý, nghỉ ngơi</p></div></div><div class="event"><span class="event-dot"></span><time>19 Oct<br>16:00</time><div><h3>Khám phá bán đảo Sơn Trà</h3><p>Thuê xe 16 chỗ · Điểm hẹn: khách sạn</p></div></div></div></div>
-          <div class="panel"><div class="panel-head"><div><h2>Checklist</h2><p class="hint">6 / 10 việc hoàn thành</p></div><button class="text-link" data-view="checklist">Mở →</button></div><div class="progress"><span style="width:60%"></span></div><div class="check-row"><input checked type="checkbox"><label class="done">Chốt vé máy bay</label><span class="avatar">HY</span></div><div class="check-row"><input checked type="checkbox"><label class="done">Đặt phòng khách sạn</label><span class="avatar">ML</span></div><div class="check-row"><input type="checkbox"><label>Mua bảo hiểm du lịch</label><span class="avatar">HY</span></div><div class="check-row"><input type="checkbox"><label>Xác nhận thực đơn ăn chay</label><span class="avatar">TA</span></div></div></div>
-        <div class="panel notifications-panel"><div class="panel-head"><div><h2>Thông báo cần xử lý</h2><p class="hint">Ý kiến đã duyệt nhưng chưa được thêm vào lịch trình.</p></div></div><div id="notification-list"><p class="hint">Chưa có thông báo cần xử lý.</p></div></div>
-      </section>
-      <section class="view" id="opinions"><div class="panel-head"><div><div class="eyebrow">Google Forms inbox</div><h1 class="section-title">Ý kiến từ member</h1><p class="hint">Tổng hợp phản hồi để leader chốt kế hoạch cho cả nhóm.</p></div><button class="btn primary" id="google-form-action" onclick="handleGoogleFormAction()">＋ Tạo Google Form</button></div><div class="opinions-layout"><div class="panel"><div class="panel-head inbox-head"><div><h2>Opinion Inbox</h2><p class="hint">Phản hồi mới nhất từ thành viên</p></div><span class="inbox-count">● 12 mới</span></div><div id="opinion-list"></div></div><aside class="panel"><h2>Tổng hợp vote</h2><p class="hint">Hoạt động được yêu thích</p><div class="mini-chart"><div class="bar" style="height:49%"><em>Biển</em></div><div class="bar active" style="height:88%"><em>Bà Nà</em></div><div class="bar" style="height:67%"><em>Ẩm thực</em></div><div class="bar" style="height:43%"><em>Hội An</em></div></div><div class="check-row"><label><b>Bà Nà Hills</b><br><small class="hint">8 / 12 bình chọn</small></label><span class="tag">Dẫn đầu</span></div><div class="form-preview" id="form-preview"><b>Chưa có form đang dùng</b>Tạo form để gửi link lấy ý kiến cho member.</div></aside></div></section>
-      <section class="view" id="plan"><div class="panel-head"><div><div class="eyebrow">Itinerary</div><h1 class="section-title">Kế hoạch chuyến đi</h1><p class="hint">Sắp xếp hoạt động theo từng ngày của chuyến đi.</p></div><button class="btn primary" onclick="openPlanModal()">＋ Thêm hoạt động</button></div><div class="tabs" id="plan-tabs"><button class="active" onclick="selectPlanDay(0)">Ngày 1 · 19 Oct</button><button onclick="selectPlanDay(1)">Ngày 2 · 20 Oct</button><button onclick="selectPlanDay(2)">Ngày 3 · 21 Oct</button><button onclick="selectPlanDay(3)">Ngày 4 · 22 Oct</button></div><div class="panel"><div class="plan-day"><div id="plan-list"></div></div></div></section>
-      <section class="view" id="checklist"><div class="panel-head"><div><div class="eyebrow">Tasks</div><h1 class="section-title">Checklist chuẩn bị</h1></div><button class="btn primary" onclick="addTask()">＋ Thêm việc</button></div><div class="panel" id="checklist-list"></div></section>
-      <section class="view" id="expenses"><div class="panel-head"><div><div class="eyebrow">Budget & settlement</div><h1 class="section-title">Chi phí chuyến đi</h1><p class="hint">Tất cả khoản chi do leader ghi nhận và chia theo người tham gia.</p></div><button class="btn primary" onclick="addExpense()">＋ Thêm khoản chi</button></div><div class="split"><div class="panel"><div class="panel-head"><h2>Khoản chi gần đây</h2><button class="text-link">Lọc: Tất cả ▾</button></div><div id="expense-list"></div></div><aside class="expense-summary"><small>TỔNG ĐÃ CHI</small><strong id="total-expense">7.850.000₫</strong><div class="owed"><span>Huy đã trả</span><span>3.850.000₫</span></div><div class="owed"><span>Minh Long cần trả</span><span>+ 325.000₫</span></div><div class="owed"><span>Thu An cần trả</span><span>+ 240.000₫</span></div><div class="owed"><span>Ngân sách còn lại</span><span>8.150.000₫</span></div></aside></div></section>
-      <section class="view" id="documents"><div class="panel-head"><div><div class="eyebrow">Trip vault</div><h1 class="section-title">Documents</h1><p class="hint">Lưu hoá đơn, booking, vé điện tử và tài liệu của riêng chuyến đi này.</p></div><button class="btn primary" onclick="addDocument()">＋ Tải lên file</button></div><div class="panel" id="document-list"></div></section>
-      <section class="view" id="export"><div class="eyebrow">Shareable trip brief</div><h1 class="section-title">Export PDF</h1><p class="hint">Chọn nội dung muốn gửi. Tài liệu booking nhạy cảm không được kèm theo mặc định.</p><div class="export-grid"><div class="export-card"><div class="doc-icon">🗺</div><h2>Trip plan</h2><p>Timeline theo ngày, địa điểm, phương tiện và ghi chú.</p><button class="btn primary export-button">Tạo PDF</button></div><div class="export-card"><div class="doc-icon">✓</div><h2>Checklist</h2><p>Danh sách công việc và người phụ trách trước khi khởi hành.</p><button class="btn primary export-button">Tạo PDF</button></div><div class="export-card"><div class="doc-icon">₫</div><h2>Expense report</h2><p>Tổng hợp khoản chi, chia tiền và công nợ mỗi người.</p><button class="btn primary export-button">Tạo PDF</button></div></div></section>
-    </main>
-  </div><div class="mobile-sidebar-backdrop" id="mobile-sidebar-backdrop" onclick="closeSidebar()"></div><div class="modal-backdrop" id="trip-modal"><form class="modal-card" id="trip-form" onsubmit="submitTrip(event)"><div class="eyebrow" id="trip-modal-eyebrow">New trip</div><h2 id="trip-modal-title">Tạo chuyến đi mới</h2><p id="trip-modal-description">Khởi tạo workspace với các thông tin cơ bản. Bạn vẫn có thể chỉnh sau.</p><div class="form-grid"><div class="full"><label for="new-trip-name">Tên chuyến đi</label><input id="new-trip-name" required placeholder="Ví dụ: Sapa săn mây" /></div><div class="full"><label for="new-trip-destination">Địa điểm</label><input id="new-trip-destination" required placeholder="Sapa, Lào Cai" /></div><div class="full"><label for="new-trip-cover">Ảnh mô tả địa điểm</label><input id="new-trip-cover" required type="file" accept="image/*" /></div><div class="full"><label for="new-trip-member-names">Tên member <span style="font-weight:400;color:#72808b">(ngăn cách bằng dấu phẩy)</span></label><input id="new-trip-member-names" required placeholder="Minh Long, Thu An, Khánh Vy" /></div><div><label for="new-trip-start">Ngày khởi hành</label><input id="new-trip-start" required type="date" /></div><div><label for="new-trip-end">Ngày kết thúc</label><input id="new-trip-end" required type="date" /></div><div><label for="new-trip-status">Trạng thái</label><select id="new-trip-status" required><option>Bản nháp</option><option>Đang lên kế hoạch</option><option>Đã chốt</option><option>Đang diễn ra</option><option>Đã hoàn tất</option></select></div><div><label for="new-trip-budget">Ngân sách dự kiến (VNĐ)</label><input id="new-trip-budget" required type="number" min="0" value="12000000" /></div></div><div class="modal-actions"><button type="button" class="btn" onclick="closeTripModal()">Hủy</button><button type="submit" class="btn primary" id="trip-modal-submit">Tạo workspace</button></div></form></div><div class="toast" id="toast"></div>
-  <div class="modal-backdrop" id="google-form-modal"><form class="modal-card" id="google-form-editor" onsubmit="submitGoogleForm(event)"><div class="eyebrow">Google Form mock</div><h2>Tạo form lấy ý kiến</h2><p>Thiết lập form demo để gửi member trước khi chốt kế hoạch.</p><div class="form-grid"><div class="full"><label for="google-form-title">Tiêu đề form</label><input id="google-form-title" required value="Đà Nẵng cuối tuần — chốt kế hoạch" /></div><div class="full"><label for="google-form-description">Mô tả</label><textarea id="google-form-description" required>Chọn hoạt động và ghi chú để leader tổng hợp.</textarea></div><div class="full"><label for="google-form-question">Câu hỏi chính</label><input id="google-form-question" required value="Bạn muốn tham gia hoạt động nào nhất?" /></div></div><div class="modal-actions"><button type="button" class="btn" onclick="closeGoogleFormModal()">Hủy</button><button type="submit" class="btn primary">Tạo form demo</button></div></form></div>
-  <div class="modal-backdrop" id="opinion-modal"><form class="modal-card" id="opinion-editor" onsubmit="saveOpinion(event)"><div class="eyebrow">Opinion Inbox</div><h2>Chỉnh sửa ý kiến</h2><p>Cập nhật phản hồi trước khi áp dụng vào kế hoạch.</p><div class="form-grid"><div><label for="opinion-member">Member</label><input id="opinion-member" required /></div><div><label for="opinion-category">Nhóm ý kiến</label><select id="opinion-category" required><option>Nhu cầu ăn uống</option><option>Hoạt động</option><option>Thời gian</option><option>Ngân sách</option><option>Khác</option></select></div><div class="full"><label for="opinion-content">Nội dung</label><textarea id="opinion-content" required></textarea></div><div class="full"><label for="opinion-status">Trạng thái</label><select id="opinion-status" required><option>Mới nhận</option><option>Đang xem xét</option><option>Đã áp dụng</option></select></div></div><div class="modal-actions"><button type="button" class="btn" onclick="closeOpinionModal()">Hủy</button><button type="submit" class="btn primary">Lưu ý kiến</button></div></form></div>
-  <div class="modal-backdrop" id="form-manager-modal"><div class="modal-card"><div class="eyebrow">Google Form</div><h2>Quản lý Form</h2><p id="managed-form-title">Đà Nẵng cuối tuần — chốt kế hoạch</p><div class="form-grid"><div class="full"><label for="managed-form-link">Link gửi member</label><input id="managed-form-link" readonly /></div></div><div class="form-preview" id="form-response-status"><b>Đang nhận phản hồi</b>Member có thể mở link và gửi ý kiến.</div><div class="modal-actions"><button type="button" class="btn" onclick="toggleFormResponses()" id="response-toggle">Dừng nhận phản hồi</button><button type="button" class="btn" onclick="copyFormLink()">Sao chép link</button><button type="button" class="btn primary" onclick="openManagedForm()">Mở form</button><button type="button" class="btn" onclick="closeFormManager()">Đóng</button></div></div></div>
-  <div class="modal-backdrop" id="plan-modal"><form class="modal-card" id="plan-editor" onsubmit="submitPlanActivity(event)"><div class="eyebrow" id="plan-modal-eyebrow">Itinerary</div><h2 id="plan-modal-title">Thêm hoạt động</h2><p id="plan-modal-description">Chọn ngày và thêm chi tiết để cập nhật lịch trình.</p><div class="form-grid"><div><label for="plan-activity-day">Ngày</label><select id="plan-activity-day" required><option value="0">Ngày 1 · 19 Oct</option><option value="1">Ngày 2 · 20 Oct</option><option value="2">Ngày 3 · 21 Oct</option><option value="3">Ngày 4 · 22 Oct</option></select></div><div><label for="plan-activity-time">Thời gian</label><input id="plan-activity-time" required type="time" value="10:00" /></div><div class="full"><label for="plan-activity-title">Hoạt động</label><input id="plan-activity-title" required placeholder="Ví dụ: Tham quan phố cổ Hội An" /></div><div class="full"><label for="plan-activity-note">Ghi chú</label><textarea id="plan-activity-note" required placeholder="Địa điểm, phương tiện hoặc người phụ trách"></textarea></div></div><div class="modal-actions"><button type="button" class="btn" onclick="closePlanModal()">Hủy</button><button type="submit" class="btn primary" id="plan-modal-submit">Thêm vào lịch trình</button></div></form></div>
-  <script>
-    const opinions=[['Thu An','Thêm món chay cho bữa tối ngày 1','Nhu cầu ăn uống','Mới nhận'],['Minh Long','Mình vote Bà Nà Hills vào sáng ngày 2.','Hoạt động','Mới nhận',['09:00','Bà Nà Hills','Đề xuất từ Minh Long · Được duyệt từ Opinion Inbox']],['Linh Pham','Có thể khởi hành sớm hơn lúc 06:30 không?','Thời gian','Đang xem xét'],['Khanh Vy','Ngân sách 2 triệu/người là ổn.','Ngân sách','Đã áp dụng']]; const notifications=[];
-    const expenses=[['Vé máy bay','19 Oct · Huy thanh toán · chia 8 người','3.600.000₫'],['Khách sạn Meliá Vinpearl','19–22 Oct · Minh Long thanh toán · chia 8 người','3.250.000₫'],['Đặt cọc xe 16 chỗ','19 Oct · Huy thanh toán · chia 8 người','1.000.000₫']];
-    const documents=[['✈','Vé máy bay VN112.pdf','Vé máy bay · 19 Oct 2026 · Liên kết: Bay đến Đà Nẵng'],['▤','Booking Meliá Vinpearl.pdf','Khách sạn · Mã ML-22091 · Liên kết: Expense Khách sạn'],['▧','Hoá đơn đặt cọc xe.jpg','Hoá đơn · 1.000.000₫ · Liên kết: Xe 16 chỗ'],['▣','Bảo hiểm du lịch.pdf','Bảo hiểm · Chưa export cùng Trip Brief']];
-    const tasks=[['Chốt vé máy bay','Huy Nguyen',true],['Đặt phòng khách sạn','Minh Long',true],['Mua bảo hiểm du lịch','Huy Nguyen',false],['Xác nhận thực đơn ăn chay','Thu An',false],['Tạo danh sách đồ cần mang','Khanh Vy',false],['Kiểm tra thời tiết & phương án mưa','Huy Nguyen',false]];
-    const plansByDay=[[['06:30','Bay đến Đà Nẵng','VN112 · Tân Sơn Nhất → Đà Nẵng · Đã đính kèm vé điện tử'],['09:30','Check-in Meliá Vinpearl Danang','39 phòng · Mã booking: ML-22091'],['16:00','Bán đảo Sơn Trà & chùa Linh Ứng','Xe 16 chỗ · Đã phân công: Minh Long'],['19:00','Ăn tối hải sản Bé Mặn','Đã đặt bàn cho 8 người · Có 1 suất chay']],[['08:00','Bà Nà Hills','Cáp treo · Khởi hành từ khách sạn lúc 07:15'],['13:00','Ăn trưa buffet','Nhà hàng Beer Plaza · Đã đặt bàn cho 8 người'],['18:30','Dạo cầu Rồng','Tự do khám phá ven sông Hàn']],[['09:00','Khám phá Hội An','Xe 16 chỗ · Đi phố cổ và chùa Cầu'],['12:30','Cơm gà Hội An','Ưu tiên món chay cho Thu An'],['16:30','Thả đèn hoa đăng','Bến thuyền Hoài River · Chuẩn bị tiền mặt']],[['08:30','Ăn sáng & trả phòng','Hoàn tất check-out trước 10:00'],['11:30','Mua đặc sản Đà Nẵng','Chợ Hàn · Quà cho gia đình'],['15:20','Bay về TP. Hồ Chí Minh','Vietnam Airlines VN113 · Có mặt ở sân bay trước 13:30']]]; let activePlanDay=0; let plans=plansByDay[activePlanDay];
-    const trips=[['Đà Nẵng cuối tuần','Đà Nẵng','19–22 tháng 10, 2026','8 người','Đang lên kế hoạch','16000000',['Huy Nguyen','Minh Long','Thu An','Khanh Vy'],null,'2026-10-19','2026-10-22'],['Hà Nội food tour','Hà Nội','04–06 tháng 12, 2026','5 người','Bản nháp','12000000',['Huy Nguyen','Minh Long','Thu An','Khanh Vy'],null,'2026-12-04','2026-12-06'],['Phú Quốc nghỉ dưỡng','Phú Quốc','12–15 tháng 2, 2027','10 người','Đã hoàn tất','20000000',['Huy Nguyen','Minh Long','Thu An','Khanh Vy'],null,'2027-02-12','2027-02-15']]; const covers=['photo-1507525428034-b723cf961d3e','photo-1506012787146-f92b2d7d6d96','photo-1506794778202-cad84cf45f1d']; let activeTrip=0; let editingTripIndex=null; let editingOpinionIndex=null; let googleForm=null;
-    const defaultMembers=['Huy Nguyen','Minh Long','Thu An','Khanh Vy']; let editingPlanIndex=null; const activeMembers=()=>trips[activeTrip][6]||defaultMembers;
-    const initials=name=>name.split(' ').map(x=>x[0]).slice(-2).join(''); const ask=(label,value='')=>{const v=prompt(label,value);return v===null?null:v.trim()}; const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    function updateCountdown(){const target=new Date('2026-10-19T06:30:00'),diff=target-Date.now(),el=document.querySelector('#countdown');if(diff<=0){el.textContent='Đang diễn ra';return}const days=Math.ceil(diff/86400000);el.textContent=`Còn ${days} ngày`;}
-    function login(provider){const email=document.querySelector('#login-email').value.trim(),password=document.querySelector('#login-password').value;const error=document.querySelector('#login-error');if(!provider&&(!email||!password)){error.textContent='Hãy nhập email và mật khẩu để tiếp tục.';return}document.querySelector('#login-screen').style.display='none';document.querySelector('#app-shell').classList.remove('hidden');showToast(provider?'Đã đăng nhập Google (demo).':'Chào mừng trở lại, Huy!');}
-    function logout(){document.querySelector('#app-shell').classList.add('hidden');document.querySelector('#login-screen').style.display='grid';document.querySelector('#login-password').focus();}
-    function actions(kind,i){const edit=kind==='opinion'?`editOpinion(${i})`:kind==='plan'?`editPlanActivity(${i})`:`editItem('${kind}',${i})`;return `<span class="row-actions"><button class="small-btn" onclick="${edit}">Sửa</button><button class="small-btn delete" onclick="deleteItem('${kind}',${i})">Xóa</button></span>`}
-    function render(){const trip=trips[activeTrip],cover=`https://images.unsplash.com/${covers[activeTrip%covers.length]}?auto=format&fit=crop&w=1300&q=85`;document.querySelector('#current-trip').textContent=trip[0];document.querySelector('#trip-cover').style.backgroundImage=`linear-gradient(180deg,rgba(10,47,59,.05),rgba(10,47,59,.86)),url('${cover}')`;document.querySelector('#trip-hero').style.backgroundImage=`linear-gradient(100deg,rgba(255,245,223,.96) 0%,rgba(255,245,223,.85) 55%,rgba(255,245,223,.1)),url('${cover}')`;document.querySelector('#breadcrumb-trip').textContent=trip[0];document.querySelector('#trip-title').textContent=trip[0];document.querySelector('#trip-summary').textContent=`${trip[2]} · ${trip[3]} · Leader: Huy Nguyen`;document.querySelector('#trip-list').innerHTML=trips.map((x,i)=>`<article class="trip-card" onclick="openTrip(${i})"><span class="tag ${x[4]==='Bản nháp'?'pending':''}">${x[4]}</span><h2 style="margin-top:13px">${safe(x[0])}</h2><p>${safe(x[1])} · ${safe(x[2])}</p><footer><span>👥 ${safe(x[3])}</span><span>Mở workspace →</span></footer></article>`).join('');document.querySelector('#opinion-list').innerHTML=opinions.map((x,i)=>`<div class="opinion"><span class="avatar">${initials(x[0])}</span><div class="opinion-main"><h3>${safe(x[1])}</h3><p>${safe(x[0])} · ${safe(x[2])}</p></div><span class="tag ${x[3]==='Mới nhận'?'pending':''}">${x[3]}</span>${x[3]!=='Đã áp dụng'?`<button class="text-link" onclick="approveOpinion(${i})">Duyệt</button>`:''}${actions('opinion',i)}</div>`).join('');document.querySelector('#expense-list').innerHTML=expenses.map((x,i)=>`<div class="expense-row"><span class="doc-icon">₫</span><div><strong>${safe(x[0])}</strong><small>${safe(x[1])}</small></div><span class="amount">${safe(x[2])}</span>${actions('expense',i)}</div>`).join('');document.querySelector('#document-list').innerHTML=documents.map((x,i)=>`<div class="document"><span class="doc-icon">${x[0]}</span><div><h3>${safe(x[1])}</h3><small>${safe(x[2])}</small></div><button class="download" title="Mở file">↗</button>${actions('document',i)}</div>`).join('');document.querySelector('#checklist-list').innerHTML=tasks.map((x,i)=>`<div class="check-row"><input type="checkbox" ${x[2]?'checked':''} onchange="toggleTask(${i})"><label class="${x[2]?'done':''}">${safe(x[0])}<br><small class="hint">Phụ trách: ${safe(x[1])}</small></label><span class="avatar">${initials(x[1])}</span>${actions('task',i)}</div>`).join('');document.querySelector('#plan-list').innerHTML=plans.map((x,i)=>`<div class="plan-card"><span class="time-chip">${safe(x[0])}</span><div><b>${safe(x[1])}</b><p>${safe(x[2])}</p></div>${actions('plan',i)}</div>`).join('')}
-    function showToast(message){const t=document.querySelector('#toast');t.textContent=message;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
-    function approveOpinion(i){const opinion=opinions[i];if(opinion[3]==='Đã áp dụng')return;opinion[3]='Đã áp dụng';notifications.unshift([opinion[0],opinion[1],opinion[2]]);render();showToast('Đã duyệt ý kiến và tạo thông báo cần xử lý.');}
-    function approveAndAddToPlan(i){const opinion=opinions[i];if(opinion[3]==='Đã áp dụng'||!opinion[4])return;plans.push(opinion[4]);opinion[3]='Đã áp dụng';render();showToast('Đã duyệt và thêm hoạt động vào Plan.');}
-    function dismissNotification(i){notifications.splice(i,1);renderNotifications();showToast('Đã đánh dấu thông báo là đã xử lý.');}
-    function updateGoogleFormUI(){const action=document.querySelector('#google-form-action'),preview=document.querySelector('#form-preview');if(!googleForm){action.textContent='＋ Tạo Google Form';preview.innerHTML='<b>Chưa có form đang dùng</b>Tạo form để gửi link lấy ý kiến cho member.';return;}action.textContent='⚙ Quản lý Form';preview.innerHTML=`<b>${safe(googleForm.title)}</b>${googleForm.accepting?'Đang nhận phản hồi · Có link gửi member':'Đã dừng nhận phản hồi'}`;}
-    function handleGoogleFormAction(){if(googleForm){openFormManager();return;}openGoogleFormModal();}
-    function openGoogleFormModal(){document.querySelector('#google-form-modal').classList.add('show');document.querySelector('#google-form-title').focus();}
-    function closeGoogleFormModal(){document.querySelector('#google-form-modal').classList.remove('show');}
-    function submitGoogleForm(event){event.preventDefault();const title=document.querySelector('#google-form-title').value.trim();googleForm={title,link:'https://forms.gle/trippilot-demo',accepting:true};closeGoogleFormModal();updateGoogleFormUI();showToast(`Đã tạo Google Form demo: ${title}`);}
-    function openFormManager(){document.querySelector('#managed-form-title').textContent=googleForm.title;document.querySelector('#managed-form-link').value=googleForm.link;document.querySelector('#form-manager-modal').classList.add('show');updateResponseStatus();}
-    function closeFormManager(){document.querySelector('#form-manager-modal').classList.remove('show');}
-    function updateResponseStatus(){const status=document.querySelector('#form-response-status'),toggle=document.querySelector('#response-toggle');status.innerHTML=googleForm.accepting?'<b>Đang nhận phản hồi</b>Member có thể mở link và gửi ý kiến.':'<b>Đã dừng nhận phản hồi</b>Link vẫn tồn tại nhưng không nhận phản hồi mới.';toggle.textContent=googleForm.accepting?'Dừng nhận phản hồi':'Mở nhận phản hồi';}
-    function toggleFormResponses(){googleForm.accepting=!googleForm.accepting;updateResponseStatus();updateGoogleFormUI();showToast(googleForm.accepting?'Đã mở nhận phản hồi.':'Đã dừng nhận phản hồi.');}
-    function copyFormLink(){showToast('Đã sao chép link form demo.');}
-    function openManagedForm(){showToast('Đang mở Google Form demo…');}
-    function editOpinion(i){const item=opinions[i],set=(id,value)=>document.querySelector(id).value=value;editingOpinionIndex=i;set('#opinion-member',item[0]);set('#opinion-content',item[1]);set('#opinion-category',item[2]);set('#opinion-status',item[3]);document.querySelector('#opinion-modal').classList.add('show');document.querySelector('#opinion-content').focus();}
-    function closeOpinionModal(){editingOpinionIndex=null;document.querySelector('#opinion-modal').classList.remove('show');}
-    function saveOpinion(event){event.preventDefault();if(editingOpinionIndex===null)return;const value=id=>document.querySelector(id).value.trim();opinions[editingOpinionIndex]=[value('#opinion-member'),value('#opinion-content'),value('#opinion-category'),value('#opinion-status')];closeOpinionModal();render();showToast('Đã cập nhật ý kiến trong Inbox.');}
-    function applyVote(){showToast('Đã thêm Bà Nà Hills vào Plan ngày 2.');}
-    function toggleTask(i){tasks[i][2]=!tasks[i][2];render();showToast(tasks[i][2]?'Đã hoàn thành checklist.':'Đã mở lại checklist.');}
-    function addExpense(){const name=ask('Tên khoản chi');if(!name)return;const amount=ask('Số tiền','1.000.000₫');if(!amount)return;expenses.unshift([name,'Hôm nay · Huy thanh toán · chia 8 người',amount]);render();showToast('Đã thêm khoản chi.');}
-    function addTask(){const name=ask('Tên công việc');if(!name)return;const owner=ask(`Người phụ trách (member: ${activeMembers().join(', ')})`,activeMembers()[0]);if(!owner)return;tasks.push([name,owner,false]);render();showToast('Đã thêm checklist.');}
-    function selectPlanDay(day){activePlanDay=day;plans=plansByDay[day];document.querySelectorAll('#plan-tabs button').forEach((button,i)=>button.classList.toggle('active',i===day));render();}
-    function openPlanModal(){editingPlanIndex=null;document.querySelector('#plan-editor').reset();document.querySelector('#plan-modal-eyebrow').textContent='Itinerary';document.querySelector('#plan-modal-title').textContent='Thêm hoạt động';document.querySelector('#plan-modal-description').textContent='Chọn ngày và thêm chi tiết để cập nhật lịch trình.';document.querySelector('#plan-modal-submit').textContent='Thêm vào lịch trình';document.querySelector('#plan-activity-day').disabled=false;document.querySelector('#plan-activity-day').value=activePlanDay;document.querySelector('#plan-activity-time').value='10:00';document.querySelector('#plan-modal').classList.add('show');document.querySelector('#plan-activity-title').focus();}
-    function editPlanActivity(i){const activity=plans[i],set=(id,value)=>document.querySelector(id).value=value;editingPlanIndex=i;document.querySelector('#plan-modal-eyebrow').textContent='Edit itinerary';document.querySelector('#plan-modal-title').textContent='Chỉnh sửa hoạt động';document.querySelector('#plan-modal-description').textContent='Cập nhật chi tiết hoạt động trong ngày đang chọn.';document.querySelector('#plan-modal-submit').textContent='Lưu thay đổi';document.querySelector('#plan-activity-day').disabled=true;set('#plan-activity-day',activePlanDay);set('#plan-activity-time',activity[0]);set('#plan-activity-title',activity[1]);set('#plan-activity-note',activity[2]);document.querySelector('#plan-modal').classList.add('show');document.querySelector('#plan-activity-title').focus();}
-    function closePlanModal(){editingPlanIndex=null;document.querySelector('#plan-modal').classList.remove('show');}
-    function submitPlanActivity(event){event.preventDefault();const value=id=>document.querySelector(id).value.trim(),day=Number(value('#plan-activity-day')),activity=[value('#plan-activity-time'),value('#plan-activity-title'),value('#plan-activity-note')];if(editingPlanIndex!==null){plansByDay[day][editingPlanIndex]=activity;closePlanModal();event.target.reset();selectPlanDay(day);showToast('Đã cập nhật hoạt động trong lịch trình.');return;}plansByDay[day].push(activity);closePlanModal();event.target.reset();selectPlanDay(day);showToast('Đã thêm hoạt động vào lịch trình.');}
-    function addDocument(){const name=ask('Tên file/tài liệu');if(!name)return;documents.unshift(['▣',name,'Tài liệu mới · Chưa liên kết']);render();showToast('Đã thêm document mẫu.');}
-    function editItem(kind,i){const source={opinion:opinions,expense:expenses,document:documents,task:tasks,plan:plans}[kind],item=source[i];let v;if(kind==='task'){v=ask('Tên công việc',item[0]);if(v!==null&&v) item[0]=v;v=ask('Người phụ trách',item[1]);if(v!==null&&v)item[1]=v}else if(kind==='plan'){v=ask('Tên hoạt động',item[1]);if(v!==null&&v)item[1]=v;v=ask('Ghi chú',item[2]);if(v!==null&&v)item[2]=v}else{v=ask(kind==='opinion'?'Nội dung ý kiến':kind==='expense'?'Tên khoản chi':'Tên document',item[1]||item[0]);if(v!==null&&v){if(kind==='expense')item[0]=v;else item[1]=v}}render();showToast('Đã cập nhật dữ liệu mẫu.');}
-    function deleteItem(kind,i){if(!confirm('Xóa dữ liệu mẫu này?'))return;({opinion:opinions,expense:expenses,document:documents,task:tasks,plan:plans}[kind]).splice(i,1);render();showToast('Đã xóa dữ liệu mẫu.');}
-    function toggleSidebar(){const sidebar=document.querySelector('#sidebar'),open=sidebar.classList.toggle('mobile-open');document.querySelector('#mobile-sidebar-backdrop').classList.toggle('show',open);}
-    function closeSidebar(){document.querySelector('#sidebar').classList.remove('mobile-open');document.querySelector('#mobile-sidebar-backdrop').classList.remove('show');}
-    function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.nav-item').forEach(v=>v.classList.toggle('active',v.dataset.view===id));closeSidebar();window.scrollTo({top:0,behavior:'smooth'});}
-    function updateTripSummary(){const trip=trips[activeTrip],statusClass={'Bản nháp':'status-draft','Đang lên kế hoạch':'status-planning','Đã chốt':'status-confirmed','Đang diễn ra':'status-ongoing','Đã hoàn tất':'status-completed'}[trip[4]];document.querySelector('#trip-destination').textContent=trip[1];document.querySelector('#trip-budget').textContent=`${Number(trip[5]).toLocaleString('vi-VN')}₫`;document.querySelector('#trip-status').textContent=trip[4];document.querySelector('#trip-status-badge').className=`status ${statusClass}`;}
-    function applyLocalCover(){const local=trips[activeTrip][7];if(!local)return;document.querySelector('#trip-cover').style.backgroundImage=`linear-gradient(180deg,rgba(10,47,59,.05),rgba(10,47,59,.86)),url('${local}')`;document.querySelector('#trip-hero').style.backgroundImage=`linear-gradient(100deg,rgba(255,245,223,.96) 0%,rgba(255,245,223,.85) 55%,rgba(255,245,223,.1)),url('${local}')`;}
-    function openTrip(i){activeTrip=i;render();updateTripSummary();applyLocalCover();showView('overview');showToast('Đã mở workspace '+trips[i][0]+'.');}
-    function openTripModal(mode='create'){const editing=mode==='edit',trip=trips[activeTrip],set=(id,value)=>document.querySelector(id).value=value;editingTripIndex=editing?activeTrip:null;document.querySelector('#trip-modal-eyebrow').textContent=editing?'Edit trip':'New trip';document.querySelector('#trip-modal-title').textContent=editing?'Chỉnh sửa chuyến đi':'Tạo chuyến đi mới';document.querySelector('#trip-modal-description').textContent=editing?'Cập nhật thông tin workspace của chuyến đi này.':'Khởi tạo workspace với các thông tin cơ bản. Bạn vẫn có thể chỉnh sau.';document.querySelector('#trip-modal-submit').textContent=editing?'Lưu thay đổi':'Tạo workspace';document.querySelector('#new-trip-cover').required=!editing;if(editing){set('#new-trip-name',trip[0]);set('#new-trip-destination',trip[1]);set('#new-trip-member-names',activeMembers().join(', '));set('#new-trip-start',trip[8]||'');set('#new-trip-end',trip[9]||'');set('#new-trip-status',trip[4]);set('#new-trip-budget',trip[5]||'');}else{document.querySelector('#trip-form').reset();set('#new-trip-status','Bản nháp');set('#new-trip-budget','12000000');}document.querySelector('#trip-modal').classList.add('show');document.querySelector('#new-trip-name').focus();}
-    function closeTripModal(){editingTripIndex=null;document.querySelector('#trip-modal').classList.remove('show');}
-    function submitTrip(event){event.preventDefault();const value=id=>document.querySelector(id).value,file=document.querySelector('#new-trip-cover').files[0];const name=value('#new-trip-name'),destination=value('#new-trip-destination'),start=value('#new-trip-start'),end=value('#new-trip-end'),status=value('#new-trip-status'),budget=value('#new-trip-budget'),memberNames=value('#new-trip-member-names').split(',').map(x=>x.trim()).filter(Boolean),localCover=file?URL.createObjectURL(file):null,tripData=[name,destination,`${start} → ${end}`,`${memberNames.length} người`,status,budget,memberNames,localCover,start,end];if(editingTripIndex!==null){const previous=trips[editingTripIndex];tripData[7]=localCover||previous[7];trips[editingTripIndex]=tripData;activeTrip=editingTripIndex;closeTripModal();event.target.reset();render();updateTripSummary();applyLocalCover();showToast('Đã cập nhật thông tin chuyến đi.');return;}trips.unshift(tripData);closeTripModal();event.target.reset();openTrip(0);showToast('Đã tạo trip mới cùng ảnh mô tả và member.');}
-    function tripStatusClass(status){return {'Bản nháp':'status-draft','Đang lên kế hoạch':'status-planning','Đã chốt':'status-confirmed','Đang diễn ra':'status-ongoing','Đã hoàn tất':'status-completed'}[status]||'status-draft'}
-    function renderTripCollection(){document.querySelector('#trip-list').innerHTML=trips.map((x,i)=>`<article class="trip-card" onclick="openTrip(${i})"><span class="tag ${tripStatusClass(x[4])}">${x[4]}</span><h2 style="margin-top:13px">${safe(x[0])}</h2><p>${safe(x[1])} · ${safe(x[2])}</p><footer><span>👥 ${safe(x[3])}</span><span>Mở workspace →</span></footer></article>`).join('')}
-    function renderOpinions(){document.querySelector('#opinion-list').innerHTML=opinions.map((x,i)=>{const applied=x[3]==='Đã áp dụng',primary=applied?'<span class="small-btn applied">Đã áp dụng</span>':x[4]?`<button class="small-btn apply" onclick="approveAndAddToPlan(${i})">Duyệt & thêm Plan</button>`:`<button class="small-btn apply" onclick="approveOpinion(${i})">Duyệt</button>`;return `<div class="opinion"><span class="avatar">${initials(x[0])}</span><div class="opinion-main"><h3>${safe(x[1])}</h3><p>${safe(x[0])} · ${safe(x[2])}</p></div><span class="opinion-actions">${primary}<button class="small-btn" onclick="editOpinion(${i})">Sửa</button><button class="small-btn delete" onclick="deleteItem('opinion',${i})">Xóa</button></span></div>`}).join('')}
-    function renderNotifications(){const list=document.querySelector('#notification-list');list.innerHTML=notifications.length?notifications.map((x,i)=>`<div class="notification-row"><span class="avatar">${initials(x[0])}</span><div class="notification-copy"><h3>${safe(x[1])}</h3><p>${safe(x[0])} · ${safe(x[2])} · Đã duyệt, chưa thêm vào Plan</p></div><button class="small-btn" onclick="dismissNotification(${i})">Đánh dấu đã xử lý</button></div>`).join(''):'<p class="hint">Chưa có thông báo cần xử lý.</p>';}
-    const baseRender=render;render=function(){baseRender();renderTripCollection();renderOpinions();renderNotifications();};
-    document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));document.querySelectorAll('.export-button').forEach(btn=>btn.addEventListener('click',()=>showToast('PDF demo đang được tạo… (mock interaction)')));render();updateCountdown();setInterval(updateCountdown,60000);
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TripPilot — Quản lý chuyến đi</title>
+    <style>
+      :root {
+        --ink: #22384a;
+        --muted: #72808b;
+        --line: #eadfce;
+        --paper: #fff8ee;
+        --card: #fffdf9;
+        --forest: #e56845;
+        --lime: #ffd166;
+        --orange: #ff9b6a;
+        --blue: #d9f0f6;
+        --shadow: 0 10px 26px rgba(115, 72, 37, 0.1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+      }
+      .login-screen {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        background: #f7f9f8;
+      }
+      .login-art {
+        background:
+          linear-gradient(
+            145deg,
+            rgba(10, 52, 39, 0.74),
+            rgba(18, 96, 70, 0.54)
+          ),
+          url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1300&q=85")
+            center/cover;
+        color: #fff;
+        padding: clamp(30px, 6vw, 82px);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .login-art h1 {
+        font-size: clamp(36px, 5vw, 64px);
+        max-width: 560px;
+        line-height: 1.05;
+        margin: 0;
+      }
+      .login-art p {
+        max-width: 420px;
+        color: #dcf1e8;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .login-card-wrap {
+        display: grid;
+        place-items: center;
+        padding: 25px;
+      }
+      .login-card {
+        width: min(410px, 100%);
+      }
+      .login-card h2 {
+        font-size: 29px;
+        margin: 28px 0 7px;
+      }
+      .login-card > p {
+        color: var(--muted);
+        margin: 0 0 25px;
+      }
+      .login-card label {
+        display: block;
+        font-size: 13px;
+        font-weight: 800;
+        margin: 15px 0 7px;
+      }
+      .login-card input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 9px;
+        border: 1px solid #d9e2de;
+        font: inherit;
+        outline-color: var(--forest);
+      }
+      .login-card .btn {
+        width: 100%;
+        margin-top: 20px;
+      }
+      .login-divider {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 12px;
+        margin: 19px 0;
+      }
+      .login-divider:before,
+      .login-divider:after {
+        content: "";
+        height: 1px;
+        background: var(--line);
+        flex: 1;
+      }
+      .google-btn {
+        width: 100%;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 11px;
+        font-weight: 800;
+      }
+      .login-error {
+        min-height: 19px;
+        color: #b03a24;
+        font-size: 12px;
+        margin-top: 8px;
+      }
+      .app.hidden {
+        display: none;
+      }
+      .app {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 250px 1fr;
+      }
+      .sidebar {
+        background: #174e5c;
+        color: #f4f8ec;
+        padding: 24px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 8px;
+        font-size: 21px;
+        font-weight: 800;
+        letter-spacing: -0.8px;
+      }
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 31px;
+        height: 31px;
+        border-radius: 50% 50% 50% 12%;
+        background: var(--lime);
+        color: #174e5c;
+        font-size: 18px;
+      }
+      .trip-switcher {
+        width: 100%;
+        min-height: 120px;
+        border: 2px solid rgba(255, 255, 255, 0.58);
+        background:
+          linear-gradient(
+            180deg,
+            rgba(10, 47, 59, 0.05),
+            rgba(10, 47, 59, 0.86)
+          ),
+          url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=700&q=80")
+            center/cover;
+        border-radius: 20px 20px 20px 6px;
+        padding: 13px;
+        color: #fff;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+      .trip-switcher:hover {
+        border-color: var(--lime);
+      }
+      .trip-switcher small,
+      .sidebar-label {
+        color: #d7eee3;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+      .trip-switcher strong {
+        display: block;
+        padding-top: 5px;
+        font-size: 15px;
+        text-shadow: 0 1px 8px #10221d;
+      }
+      .trip-switcher span {
+        font-size: 11px;
+        color: #e6f6ef;
+        margin-top: 4px;
+      }
+      nav {
+        display: grid;
+        gap: 5px;
+      }
+      .nav-item {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        color: #c3d9d0;
+        text-align: left;
+        border-radius: 10px;
+        padding: 11px 12px;
+        display: flex;
+        gap: 11px;
+        align-items: center;
+        font-weight: 600;
+      }
+      .nav-item:hover,
+      .nav-item.active {
+        background: rgba(223, 244, 106, 0.14);
+        color: #f4ffc2;
+      }
+      .nav-item b {
+        margin-left: auto;
+        border-radius: 999px;
+        padding: 2px 7px;
+        background: var(--lime);
+        color: #244d3e;
+        font-size: 11px;
+      }
+      .side-bottom {
+        margin-top: auto;
+        border-top: 1px solid rgba(255, 255, 255, 0.13);
+        padding: 18px 8px 0;
+        color: #c3d9d0;
+        font-size: 13px;
+      }
+      .logout {
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: transparent;
+        color: #d7eee3;
+        border-radius: 9px;
+        padding: 9px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .logout:hover {
+        border-color: #ffb098;
+        color: #fff;
+      }
+      .main {
+        min-width: 0;
+        padding: 27px clamp(20px, 4vw, 60px) 40px;
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 25px;
+      }
+      .topbar-start {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .mobile-menu-toggle {
+        display: none;
+        width: 39px;
+        height: 39px;
+        padding: 0;
+        place-items: center;
+        font-size: 18px;
+      }
+      .mobile-sidebar-backdrop {
+        display: none;
+      }
+      .account-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .account-top small {
+        display: block;
+        color: var(--muted);
+        font-weight: 500;
+      }
+      .breadcrumb {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .breadcrumb strong {
+        color: var(--ink);
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .icon-btn,
+      .btn {
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink);
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-weight: 700;
+      }
+      .btn.primary {
+        color: #fff;
+        border-color: var(--forest);
+        background: var(--forest);
+      }
+      .btn.primary:hover {
+        background: #11563f;
+      }
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+      }
+      .hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        background:
+          linear-gradient(
+            100deg,
+            rgba(255, 245, 223, 0.96) 0%,
+            rgba(255, 245, 223, 0.85) 55%,
+            rgba(255, 245, 223, 0.1)
+          ),
+          url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1300&q=85")
+            center/cover;
+        border: 1px solid #e9cfaa;
+        border-radius: 24px 24px 24px 7px;
+        padding: 30px;
+        overflow: hidden;
+      }
+      .eyebrow {
+        color: var(--forest);
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        font-weight: 800;
+      }
+      h1 {
+        font-size: clamp(28px, 3vw, 40px);
+        margin: 6px 0 8px;
+        letter-spacing: -1.4px;
+      }
+      h2 {
+        font-size: 21px;
+        letter-spacing: -0.5px;
+        margin: 0;
+      }
+      h3 {
+        font-size: 15px;
+        margin: 0;
+      }
+      .hero p {
+        margin: 0;
+        color: #596b70;
+      }
+      .hero-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+      }
+      .status {
+        display: inline-flex;
+        gap: 7px;
+        align-items: center;
+        border-radius: 999px;
+        padding: 8px 11px;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .status .dot {
+        background: currentColor;
+      }
+      .status-draft {
+        background: #eef1f3;
+        color: #66727a;
+      }
+      .status-planning {
+        background: #fff2d9;
+        color: #a26000;
+      }
+      .status-confirmed {
+        background: #e6f2fb;
+        color: #1e6391;
+      }
+      .status-ongoing {
+        background: #e4f5ec;
+        color: #15744e;
+      }
+      .status-completed {
+        background: #f0eafa;
+        color: #7351a5;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--forest);
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin: 20px 0;
+      }
+      .stat,
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        border-radius: 16px;
+      }
+      .stat {
+        padding: 17px;
+      }
+      .stat small {
+        display: block;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .stat strong {
+        font-size: 21px;
+        letter-spacing: -0.7px;
+      }
+      .stat .good {
+        color: #178557;
+        font-size: 12px;
+        margin-left: 5px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1.18fr 0.82fr;
+        gap: 20px;
+      }
+      .panel {
+        padding: 20px;
+      }
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .text-link {
+        border: 0;
+        padding: 0;
+        color: var(--forest);
+        background: none;
+        font-weight: 800;
+        font-size: 13px;
+      }
+      .timeline {
+        position: relative;
+        display: grid;
+        gap: 17px;
+      }
+      .timeline:before {
+        content: "";
+        position: absolute;
+        left: 9px;
+        top: 13px;
+        bottom: 13px;
+        width: 2px;
+        background: #dce8e2;
+      }
+      .event {
+        position: relative;
+        display: grid;
+        grid-template-columns: 28px 73px 1fr;
+        gap: 10px;
+        align-items: start;
+      }
+      .event-dot {
+        z-index: 1;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 5px solid #c9efdf;
+        background: var(--forest);
+      }
+      .event time {
+        color: var(--muted);
+        font-size: 12px;
+        padding-top: 2px;
+      }
+      .event p {
+        color: var(--muted);
+        font-size: 12px;
+        margin: 3px 0 0;
+      }
+      .progress {
+        height: 8px;
+        border-radius: 9px;
+        background: #eaf0ed;
+        overflow: hidden;
+      }
+      .progress span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--forest);
+      }
+      #checklist-list {
+        margin-top: 22px;
+      }
+      .check-row,
+      .document,
+      .expense-row,
+      .opinion {
+        display: flex;
+        gap: 11px;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .check-row:last-child,
+      .document:last-child,
+      .expense-row:last-child,
+      .opinion:last-child {
+        border: 0;
+      }
+      .check-row input {
+        accent-color: var(--forest);
+        width: 17px;
+        height: 17px;
+      }
+      .check-row label {
+        flex: 1;
+        font-size: 13px;
+      }
+      .check-row label.done {
+        text-decoration: line-through;
+        color: var(--muted);
+      }
+      .avatar {
+        width: 27px;
+        height: 27px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #fce3d9;
+        color: #a44a29;
+        font-size: 10px;
+        font-weight: 800;
+      }
+      .assignee-name {
+        margin-left: auto;
+        padding: 5px 9px;
+        border-radius: 999px;
+        background: #e2f0e8;
+        color: var(--forest);
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .section-title {
+        margin: 0 0 18px;
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 4px 0 0;
+      }
+      .notifications-panel {
+        margin-top: 20px;
+      }
+      .notification-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        padding: 13px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .notification-row:last-child {
+        border: 0;
+      }
+      .notification-copy {
+        flex: 1;
+      }
+      .notification-copy p {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 4px 0 0;
+      }
+      .opinions-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 20px;
+      }
+      .opinion {
+        align-items: flex-start;
+        padding: 16px 0;
+      }
+      .opinion-main {
+        flex: 1;
+      }
+      .opinion h3 {
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .opinion p {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .opinion-actions {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .opinion .row-actions {
+        margin-left: 0;
+      }
+      .small-btn.apply {
+        background: var(--forest);
+        border-color: var(--forest);
+        color: #fff;
+      }
+      .small-btn.applied {
+        background: #edf6f1;
+        border-color: #d5eadc;
+        color: var(--forest);
+      }
+      .inbox-head {
+        align-items: flex-start;
+      }
+      .inbox-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #edf6f1;
+        color: var(--forest);
+        font-size: 11px;
+        font-weight: 800;
+        padding: 5px 8px;
+        border-radius: 999px;
+      }
+      .form-preview {
+        margin-top: 15px;
+        padding: 13px;
+        border-radius: 12px;
+        background: #f6fbf8;
+        border: 1px dashed #bad7c9;
+        font-size: 12px;
+        color: #527068;
+      }
+      .form-preview b {
+        display: block;
+        color: var(--ink);
+        margin-bottom: 4px;
+      }
+      .tag {
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: #edf6f1;
+        color: var(--forest);
+        font-size: 11px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .tag.pending {
+        background: #fff2d9;
+        color: #a26000;
+      }
+      .tag.reject {
+        background: #fde8e4;
+        color: #b03a24;
+      }
+      .trip-card .tag.status-draft {
+        background: #eef1f3;
+        color: #66727a;
+      }
+      .trip-card .tag.status-planning {
+        background: #fff2d9;
+        color: #a26000;
+      }
+      .trip-card .tag.status-confirmed {
+        background: #e6f2fb;
+        color: #1e6391;
+      }
+      .trip-card .tag.status-ongoing {
+        background: #e4f5ec;
+        color: #15744e;
+      }
+      .trip-card .tag.status-completed {
+        background: #f0eafa;
+        color: #7351a5;
+      }
+      .mini-chart {
+        display: flex;
+        align-items: end;
+        gap: 12px;
+        height: 165px;
+        padding: 10px 2px 30px;
+        border-bottom: 1px solid var(--line);
+      }
+      .bar {
+        flex: 1;
+        background: #d5eee3;
+        border-radius: 8px 8px 0 0;
+        position: relative;
+        min-width: 32px;
+      }
+      .bar.active {
+        background: var(--forest);
+      }
+      .bar em {
+        position: absolute;
+        bottom: -23px;
+        font-size: 10px;
+        color: var(--muted);
+        font-style: normal;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .tabs {
+        display: flex;
+        gap: 7px;
+        overflow: auto;
+        margin-bottom: 19px;
+      }
+      .tabs button {
+        border: 0;
+        background: #eaf0ed;
+        color: #61736b;
+        border-radius: 9px;
+        padding: 8px 11px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .tabs button.active {
+        background: var(--forest);
+        color: #fff;
+      }
+      .plan-day {
+        border-left: 3px solid var(--lime);
+        padding: 0 0 20px 18px;
+        margin-left: 8px;
+      }
+      .plan-day h3 {
+        margin-bottom: 9px;
+      }
+      .plan-card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 13px;
+        margin-top: 9px;
+        background: #fff;
+        display: flex;
+        gap: 12px;
+      }
+      .time-chip {
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--forest);
+        background: #e9f5f0;
+        padding: 5px;
+        height: max-content;
+        border-radius: 6px;
+      }
+      .plan-card p {
+        margin: 3px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .split {
+        display: grid;
+        grid-template-columns: 1.25fr 0.75fr;
+        gap: 20px;
+      }
+      .expense-row strong {
+        font-size: 13px;
+      }
+      .expense-row small {
+        display: block;
+        color: var(--muted);
+        margin-top: 3px;
+      }
+      .amount {
+        margin-left: auto;
+        font-weight: 800;
+      }
+      .expense-summary {
+        background: #174e5c;
+        color: #fff;
+        border-radius: 20px 20px 20px 6px;
+        padding: 20px;
+      }
+      .expense-summary small {
+        color: #cde5e8;
+      }
+      .expense-summary strong {
+        display: block;
+        font-size: 29px;
+        margin: 7px 0 18px;
+      }
+      .owed {
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px solid rgba(255, 255, 255, 0.16);
+        padding: 12px 0;
+        font-size: 13px;
+      }
+      .owed:last-child {
+        padding-bottom: 0;
+      }
+      .owed span:last-child {
+        color: var(--lime);
+        font-weight: 800;
+      }
+      .doc-icon {
+        width: 38px;
+        height: 42px;
+        border-radius: 9px;
+        background: #e5f1ff;
+        display: grid;
+        place-items: center;
+        font-size: 19px;
+      }
+      .doc-image-preview {
+        width: 100%;
+        height: 220px;
+        border: 1px dashed var(--line);
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+        background: #f7faf8 center / contain no-repeat;
+        overflow: hidden;
+      }
+      .doc-image-preview.has-image {
+        color: transparent;
+        border-style: solid;
+      }
+      .doc-icon.has-image {
+        background-position: center;
+        background-size: cover;
+      }
+      .document > div:nth-child(2) {
+        flex: 1;
+      }
+      .document small {
+        display: block;
+        color: var(--muted);
+        margin-top: 3px;
+        font-size: 12px;
+      }
+      .download {
+        border: 0;
+        background: none;
+        color: var(--forest);
+        font-size: 18px;
+      }
+      .row-actions {
+        display: flex;
+        gap: 5px;
+        margin-left: auto;
+      }
+      .small-btn {
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--forest);
+        border-radius: 7px;
+        padding: 5px 7px;
+        font-size: 11px;
+        font-weight: 800;
+      }
+      .small-btn.delete {
+        color: #b03a24;
+      }
+      .export-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .export-card {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+        background: #fff;
+      }
+      .export-card .doc-icon {
+        margin-bottom: 15px;
+      }
+      .export-card p {
+        font-size: 12px;
+        color: var(--muted);
+        min-height: 35px;
+      }
+      .export-card button {
+        width: 100%;
+        margin-top: 8px;
+      }
+      .trip-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .trip-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 19px;
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .trip-card:hover {
+        transform: translateY(-3px);
+        border-color: #99caba;
+      }
+      .trip-card p {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 7px 0 16px;
+      }
+      .trip-card footer {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--forest);
+        font-weight: 800;
+      }
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 44, 53, 0.52);
+        display: none;
+        place-items: center;
+        padding: 20px;
+        z-index: 10;
+      }
+      .modal-backdrop.show {
+        display: grid;
+      }
+      .modal-card {
+        position: relative;
+        width: min(610px, 100%);
+        background: #fffdf9;
+        border-radius: 24px 24px 24px 7px;
+        padding: 26px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      }
+      .modal-close {
+        position: absolute;
+        top: 14px;
+        right: 15px;
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        font-size: 26px;
+        line-height: 1;
+        padding: 4px 7px;
+      }
+      .modal-close:hover { color: var(--forest); }
+      .modal-card h2 {
+        margin: 4px 0 7px;
+      }
+      .modal-card p {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 0 0 20px;
+      }
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .form-grid .full {
+        grid-column: 1/-1;
+      }
+      .form-grid label {
+        display: block;
+        font-size: 12px;
+        font-weight: 800;
+        margin-bottom: 6px;
+      }
+      .form-grid input,
+      .form-grid select,
+      .form-grid textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 11px;
+        font: inherit;
+        background: #fff;
+      }
+      .form-grid textarea {
+        min-height: 96px;
+        resize: vertical;
+      }
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 22px;
+      }
+      .toast {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        background: #10221d;
+        color: #fff;
+        padding: 13px 17px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        transform: translateY(90px);
+        opacity: 0;
+        transition: 0.25s;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      @media (max-width: 920px) {
+        .login-screen {
+          grid-template-columns: 1fr;
+        }
+        .login-art {
+          min-height: 280px;
+          padding: 32px;
+        }
+        .login-art h1 {
+          font-size: 38px;
+        }
+        .app {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          display: flex;
+          position: fixed;
+          inset: 0 auto 0 0;
+          width: min(280px, 82vw);
+          z-index: 30;
+          transform: translateX(-105%);
+          transition: transform 0.24s ease;
+          box-shadow: 12px 0 30px rgba(16, 34, 29, 0.22);
+        }
+        .sidebar.mobile-open {
+          transform: translateX(0);
+        }
+        .mobile-sidebar-backdrop.show {
+          display: block;
+          position: fixed;
+          inset: 0;
+          z-index: 20;
+          background: rgba(16, 34, 29, 0.42);
+        }
+        .mobile-menu-toggle {
+          display: grid;
+        }
+        .stat-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .grid,
+        .opinions-layout,
+        .split,
+        .trip-list {
+          grid-template-columns: 1fr;
+        }
+        .main {
+          padding: 20px;
+        }
+        .hero {
+          padding: 22px;
+        }
+        .export-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 620px) {
+        .topbar,
+        .panel-head {
+          align-items: flex-start;
+          flex-wrap: wrap;
+        }
+        .hero {
+          flex-direction: column;
+        }
+        .hero-actions {
+          width: 100%;
+          align-items: flex-start;
+        }
+        .opinion {
+          flex-wrap: wrap;
+        }
+        .opinion-main,
+        .notification-copy {
+          min-width: 0;
+        }
+        .opinion-main {
+          width: calc(100% - 38px);
+        }
+        .opinion > .tag {
+          margin-left: 38px;
+        }
+        .opinion-actions {
+          width: 100%;
+          padding-left: 38px;
+          justify-content: flex-start;
+        }
+        .notification-row {
+          flex-wrap: wrap;
+        }
+        .notification-row .small-btn {
+          margin-left: 38px;
+        }
+        h1,
+        h2,
+        h3,
+        p {
+          overflow-wrap: anywhere;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="login-screen" id="login-screen">
+      <div class="login-art">
+        <div class="brand"><span class="brand-mark">✦</span> TripPilot</div>
+        <div>
+          <div class="eyebrow" style="color: #dff46a">
+            Leader-only travel workspace
+          </div>
+          <h1>Chuyến đi gọn gàng, leader nhẹ đầu.</h1>
+          <p>
+            Lên kế hoạch, gom ý kiến, quản lý chi phí và xuất thông tin cho cả
+            nhóm — tại một nơi.
+          </p>
+        </div>
+        <small>© 2026 TripPilot</small>
+      </div>
+      <div class="login-card-wrap">
+        <div class="login-card">
+          <div class="brand" style="color: #176b50">
+            <span class="brand-mark">✦</span> TripPilot
+          </div>
+          <h2>Chào mừng trở lại</h2>
+          <p>Đăng nhập để tiếp tục quản lý các chuyến đi của bạn.</p>
+          <label for="login-email">Email</label
+          ><input
+            id="login-email"
+            type="email"
+            placeholder="leader@example.com"
+            value="huy@trippilot.vn"
+          /><label for="login-password">Mật khẩu</label
+          ><input
+            id="login-password"
+            type="password"
+            placeholder="Nhập mật khẩu"
+            value="demo123"
+          /><button class="btn primary" onclick="login()">Đăng nhập</button>
+          <div class="login-error" id="login-error"></div>
+          <div class="login-divider">hoặc</div>
+          <button class="google-btn" onclick="login('google')">
+            G&nbsp; Tiếp tục với Google
+          </button>
+          <p style="font-size: 12px; text-align: center; margin-top: 22px">
+            Bản mock: dùng email/mật khẩu bất kỳ để vào app.
+          </p>
+        </div>
+      </div>
+    </section>
+    <div class="app hidden" id="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand"><span class="brand-mark">✦</span> TripPilot</div>
+        <button class="trip-switcher" id="trip-cover" data-view="trips">
+          <small>Trip collection</small
+          ><strong id="current-trip">Đà Nẵng cuối tuần</strong
+          ><span>Quản lý tất cả chuyến đi →</span>
+        </button>
+        <nav>
+          <span class="sidebar-label">Trip workspace</span>
+          <button class="nav-item active" data-view="overview">
+            ◉ Overview
+          </button>
+          <button class="nav-item" data-view="opinions">
+            ◌ Opinions <b>12</b>
+          </button>
+          <button class="nav-item" data-view="plan">◷ Plan</button>
+          <button class="nav-item" data-view="checklist">✓ Checklist</button>
+          <button class="nav-item" data-view="documents">▣ Documents</button>
+          <button class="nav-item" data-view="expenses">₫ Expenses</button>
+          <button class="nav-item" data-view="export">⇩ Export</button>
+        </nav>
+        <div class="side-bottom">
+          <button class="logout" onclick="logout()">⇥ Logout</button>
+        </div>
+      </aside>
+      <main class="main">
+        <div class="topbar">
+          <div class="topbar-start">
+            <button
+              class="icon-btn mobile-menu-toggle"
+              type="button"
+              aria-label="Mở menu"
+              onclick="toggleSidebar()"
+            >
+              ☰
+            </button>
+            <div class="breadcrumb">
+              My trips / <strong id="breadcrumb-trip">Đà Nẵng cuối tuần</strong>
+            </div>
+          </div>
+          <div class="actions">
+            <span class="account-top"
+              ><span class="avatar">HN</span
+              ><span>Huy Nguyen<small>Leader</small></span></span
+            >
+          </div>
+        </div>
+        <section class="view" id="trips">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">TripPilot</div>
+              <h1 class="section-title">Tất cả chuyến đi</h1>
+              <p class="hint">Tạo và mở workspace cho từng chuyến.</p>
+            </div>
+            <button class="btn primary" onclick="openTripModal()">
+              ＋ Tạo chuyến đi
+            </button>
+          </div>
+          <div class="trip-list" id="trip-list"></div>
+        </section>
+        <section class="view active" id="overview">
+          <div class="hero" id="trip-hero">
+            <div>
+              <div class="eyebrow">Trip workspace</div>
+              <h1 id="trip-title">Đà Nẵng cuối tuần</h1>
+              <p id="trip-summary">
+                19–22 tháng 10, 2026 · 8 người · Leader: Huy Nguyen
+              </p>
+            </div>
+            <div class="hero-actions">
+              <span class="status status-planning" id="trip-status-badge"
+                ><i class="dot"></i
+                ><span id="trip-status">Đang lên kế hoạch</span></span
+              ><button class="btn" onclick="openTripModal('edit')">
+                ✎ Chỉnh sửa chuyến đi
+              </button>
+            </div>
+          </div>
+          <div class="stat-grid">
+            <div class="stat">
+              <small>Điểm đến</small
+              ><strong id="trip-destination">Đà Nẵng</strong>
+            </div>
+            <div class="stat">
+              <small>Đếm ngược khởi hành</small
+              ><strong id="countdown">Còn -- ngày</strong>
+            </div>
+            <div class="stat">
+              <small>Ngân sách dự kiến</small
+              ><strong id="trip-budget">16.000.000₫</strong>
+            </div>
+            <div class="stat">
+              <small>Đã chi</small><strong>7.850.000₫</strong
+              ><span class="good">49%</span>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2>Timeline sắp tới</h2>
+                  <p class="hint">Lịch trình đã chốt cho chuyến đi</p>
+                </div>
+                <button class="text-link" data-view="plan">Xem plan →</button>
+              </div>
+              <div class="timeline">
+                <div class="event">
+                  <span class="event-dot"></span><time>19 Oct<br />06:30</time>
+                  <div>
+                    <h3>Bay đến Đà Nẵng</h3>
+                    <p>Vietnam Airlines VN112 · Tân Sơn Nhất → Đà Nẵng</p>
+                  </div>
+                </div>
+                <div class="event">
+                  <span class="event-dot"></span><time>19 Oct<br />09:30</time>
+                  <div>
+                    <h3>Nhận phòng tại Meliá Vinpearl</h3>
+                    <p>Check-in, gửi hành lý, nghỉ ngơi</p>
+                  </div>
+                </div>
+                <div class="event">
+                  <span class="event-dot"></span><time>19 Oct<br />16:00</time>
+                  <div>
+                    <h3>Khám phá bán đảo Sơn Trà</h3>
+                    <p>Thuê xe 16 chỗ · Điểm hẹn: khách sạn</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2>Checklist</h2>
+                  <p class="hint" id="overview-task-summary">0 / 0 việc hoàn thành</p>
+                </div>
+                <button class="text-link" data-view="checklist">Mở →</button>
+              </div>
+              <div class="progress"><span id="overview-task-progress"></span></div>
+              <div id="overview-task-list"></div>
+            </div>
+          </div>
+          <div class="panel notifications-panel">
+            <div class="panel-head">
+              <div>
+                <h2>Thông báo cần xử lý</h2>
+                <p class="hint">
+                  Ý kiến đã duyệt nhưng chưa được thêm vào lịch trình.
+                </p>
+              </div>
+            </div>
+            <div id="notification-list">
+              <p class="hint">Chưa có thông báo cần xử lý.</p>
+            </div>
+          </div>
+        </section>
+        <section class="view" id="opinions">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Google Forms inbox</div>
+              <h1 class="section-title">Ý kiến từ member</h1>
+              <p class="hint">
+                Tổng hợp phản hồi để leader chốt kế hoạch cho cả nhóm.
+              </p>
+            </div>
+            <button
+              class="btn primary"
+              id="google-form-action"
+              onclick="handleGoogleFormAction()"
+            >
+              ＋ Tạo Google Form
+            </button>
+          </div>
+          <div class="opinions-layout">
+            <div class="panel">
+              <div class="panel-head inbox-head">
+                <div>
+                  <h2>Opinion Inbox</h2>
+                  <p class="hint">Phản hồi mới nhất từ thành viên</p>
+                </div>
+                <span class="inbox-count">● 12 mới</span>
+              </div>
+              <div id="opinion-list"></div>
+            </div>
+            <aside class="panel">
+              <h2>Tổng hợp vote</h2>
+              <p class="hint">Hoạt động được yêu thích</p>
+              <div class="mini-chart">
+                <div class="bar" style="height: 49%"><em>Biển</em></div>
+                <div class="bar active" style="height: 88%"><em>Bà Nà</em></div>
+                <div class="bar" style="height: 67%"><em>Ẩm thực</em></div>
+                <div class="bar" style="height: 43%"><em>Hội An</em></div>
+              </div>
+              <div class="check-row">
+                <label
+                  ><b>Bà Nà Hills</b><br /><small class="hint"
+                    >8 / 12 bình chọn</small
+                  ></label
+                ><span class="tag">Dẫn đầu</span>
+              </div>
+              <div class="form-preview" id="form-preview">
+                <b>Chưa có form đang dùng</b>Tạo form để gửi link lấy ý kiến cho
+                member.
+              </div>
+            </aside>
+          </div>
+        </section>
+        <section class="view" id="plan">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Itinerary</div>
+              <h1 class="section-title">Kế hoạch chuyến đi</h1>
+              <p class="hint">
+                Sắp xếp hoạt động theo từng ngày của chuyến đi.
+              </p>
+            </div>
+            <button class="btn primary" onclick="openPlanModal()">
+              ＋ Thêm hoạt động
+            </button>
+          </div>
+          <div class="tabs" id="plan-tabs">
+            <button class="active" onclick="selectPlanDay(0)">
+              Ngày 1 · 19 Oct</button
+            ><button onclick="selectPlanDay(1)">Ngày 2 · 20 Oct</button
+            ><button onclick="selectPlanDay(2)">Ngày 3 · 21 Oct</button
+            ><button onclick="selectPlanDay(3)">Ngày 4 · 22 Oct</button>
+          </div>
+          <div class="panel">
+            <div class="plan-day"><div id="plan-list"></div></div>
+          </div>
+        </section>
+        <section class="view" id="checklist">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Tasks</div>
+              <h1 class="section-title">Checklist chuẩn bị</h1>
+              <p class="hint" id="checklist-task-summary">0 / 0 việc hoàn thành</p>
+            </div>
+            <button class="btn primary" onclick="openTaskModal()">
+              ＋ Thêm việc
+            </button>
+          </div>
+          <div class="progress"><span id="checklist-task-progress"></span></div>
+          <div class="panel" id="checklist-list"></div>
+        </section>
+        <section class="view" id="expenses">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Budget & settlement</div>
+              <h1 class="section-title">Chi phí chuyến đi</h1>
+              <p class="hint">
+                Tất cả khoản chi do leader ghi nhận và chia theo người tham gia.
+              </p>
+            </div>
+            <button class="btn primary" onclick="addExpense()">
+              ＋ Thêm khoản chi
+            </button>
+          </div>
+          <div class="split">
+            <div class="panel">
+              <div class="panel-head">
+                <h2>Khoản chi gần đây</h2>
+                <button class="text-link">Lọc: Tất cả ▾</button>
+              </div>
+              <div id="expense-list"></div>
+            </div>
+            <aside class="expense-summary">
+              <small>TỔNG ĐÃ CHI</small
+              ><strong id="total-expense">7.850.000₫</strong>
+              <div class="owed">
+                <span>Huy đã trả</span><span>3.850.000₫</span>
+              </div>
+              <div class="owed">
+                <span>Minh Long cần trả</span><span>+ 325.000₫</span>
+              </div>
+              <div class="owed">
+                <span>Thu An cần trả</span><span>+ 240.000₫</span>
+              </div>
+              <div class="owed">
+                <span>Ngân sách còn lại</span><span>8.150.000₫</span>
+              </div>
+            </aside>
+          </div>
+        </section>
+        <section class="view" id="documents">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Trip vault</div>
+              <h1 class="section-title">Documents</h1>
+              <p class="hint">
+                Lưu hoá đơn, booking, vé điện tử và tài liệu của riêng chuyến đi
+                này.
+              </p>
+            </div>
+            <button class="btn primary" onclick="addDocument()">
+              ＋ Tải lên file
+            </button>
+          </div>
+          <div class="panel" id="document-list"></div>
+        </section>
+        <section class="view" id="export">
+          <div class="eyebrow">Shareable trip brief</div>
+          <h1 class="section-title">Export PDF</h1>
+          <p class="hint">
+            Chọn nội dung muốn gửi. Tài liệu booking nhạy cảm không được kèm
+            theo mặc định.
+          </p>
+          <div class="export-grid">
+            <div class="export-card">
+              <div class="doc-icon">🗺</div>
+              <h2>Trip plan</h2>
+              <p>Timeline theo ngày, địa điểm, phương tiện và ghi chú.</p>
+              <button class="btn primary export-button">Tạo PDF</button>
+            </div>
+            <div class="export-card">
+              <div class="doc-icon">✓</div>
+              <h2>Checklist</h2>
+              <p>Danh sách công việc và người phụ trách trước khi khởi hành.</p>
+              <button class="btn primary export-button">Tạo PDF</button>
+            </div>
+            <div class="export-card">
+              <div class="doc-icon">₫</div>
+              <h2>Expense report</h2>
+              <p>Tổng hợp khoản chi, chia tiền và công nợ mỗi người.</p>
+              <button class="btn primary export-button">Tạo PDF</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div
+      class="mobile-sidebar-backdrop"
+      id="mobile-sidebar-backdrop"
+      onclick="closeSidebar()"
+    ></div>
+    <div class="modal-backdrop" id="trip-modal">
+      <form class="modal-card" id="trip-form" onsubmit="submitTrip(event)">
+        <div class="eyebrow" id="trip-modal-eyebrow">New trip</div>
+        <h2 id="trip-modal-title">Tạo chuyến đi mới</h2>
+        <p id="trip-modal-description">
+          Khởi tạo workspace với các thông tin cơ bản. Bạn vẫn có thể chỉnh sau.
+        </p>
+        <div class="form-grid">
+          <div class="full">
+            <label for="new-trip-name">Tên chuyến đi</label
+            ><input
+              id="new-trip-name"
+              required
+              placeholder="Ví dụ: Sapa săn mây"
+            />
+          </div>
+          <div class="full">
+            <label for="new-trip-destination">Địa điểm</label
+            ><input
+              id="new-trip-destination"
+              required
+              placeholder="Sapa, Lào Cai"
+            />
+          </div>
+          <div class="full">
+            <label for="new-trip-cover">Ảnh mô tả địa điểm</label
+            ><input id="new-trip-cover" required type="file" accept="image/*" />
+          </div>
+          <div class="full">
+            <label for="new-trip-member-names"
+              >Tên member
+              <span style="font-weight: 400; color: #72808b"
+                >(ngăn cách bằng dấu phẩy)</span
+              ></label
+            ><input
+              id="new-trip-member-names"
+              required
+              placeholder="Minh Long, Thu An, Khánh Vy"
+            />
+          </div>
+          <div>
+            <label for="new-trip-start">Ngày khởi hành</label
+            ><input id="new-trip-start" required type="date" />
+          </div>
+          <div>
+            <label for="new-trip-end">Ngày kết thúc</label
+            ><input id="new-trip-end" required type="date" />
+          </div>
+          <div>
+            <label for="new-trip-status">Trạng thái</label
+            ><select id="new-trip-status" required>
+              <option>Bản nháp</option>
+              <option>Đang lên kế hoạch</option>
+              <option>Đã chốt</option>
+              <option>Đang diễn ra</option>
+              <option>Đã hoàn tất</option>
+            </select>
+          </div>
+          <div>
+            <label for="new-trip-budget">Ngân sách dự kiến (VNĐ)</label
+            ><input
+              id="new-trip-budget"
+              required
+              type="number"
+              min="0"
+              value="12000000"
+            />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" onclick="closeTripModal()">
+            Hủy</button
+          ><button type="submit" class="btn primary" id="trip-modal-submit">
+            Tạo workspace
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="toast" id="toast"></div>
+    <div class="modal-backdrop" id="google-form-modal">
+      <form
+        class="modal-card"
+        id="google-form-editor"
+        onsubmit="submitGoogleForm(event)"
+      >
+        <div class="eyebrow">Google Form mock</div>
+        <h2>Tạo form lấy ý kiến</h2>
+        <p>Thiết lập form demo để gửi member trước khi chốt kế hoạch.</p>
+        <div class="form-grid">
+          <div class="full">
+            <label for="google-form-title">Tiêu đề form</label
+            ><input
+              id="google-form-title"
+              required
+              value="Đà Nẵng cuối tuần — chốt kế hoạch"
+            />
+          </div>
+          <div class="full">
+            <label for="google-form-description">Mô tả</label
+            ><textarea id="google-form-description" required>
+Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
+            >
+          </div>
+          <div class="full">
+            <label for="google-form-question">Câu hỏi chính</label
+            ><input
+              id="google-form-question"
+              required
+              value="Bạn muốn tham gia hoạt động nào nhất?"
+            />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" onclick="closeGoogleFormModal()">
+            Hủy</button
+          ><button type="submit" class="btn primary">Tạo form demo</button>
+        </div>
+      </form>
+    </div>
+    <div class="modal-backdrop" id="opinion-modal">
+      <form
+        class="modal-card"
+        id="opinion-editor"
+        onsubmit="saveOpinion(event)"
+      >
+        <button type="button" class="modal-close" aria-label="Đóng popup" onclick="closeOpinionModal()">×</button>
+        <div class="eyebrow">Opinion Inbox</div>
+        <h2>Chi tiết ý kiến</h2>
+        <p>Xem, chỉnh sửa hoặc xóa phản hồi trước khi áp dụng vào kế hoạch.</p>
+        <div class="form-grid">
+          <div>
+            <label for="opinion-member">Member</label
+            ><input id="opinion-member" required />
+          </div>
+          <div>
+            <label for="opinion-category">Nhóm ý kiến</label
+            ><select id="opinion-category" required>
+              <option>Nhu cầu ăn uống</option>
+              <option>Hoạt động</option>
+              <option>Thời gian</option>
+              <option>Ngân sách</option>
+              <option>Khác</option>
+            </select>
+          </div>
+          <div class="full">
+            <label for="opinion-content">Nội dung</label
+            ><textarea id="opinion-content" required></textarea>
+          </div>
+          <div class="full">
+            <label for="opinion-status">Trạng thái</label
+            ><select id="opinion-status" required>
+              <option>Mới nhận</option>
+              <option>Đang xem xét</option>
+              <option>Đã áp dụng</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" style="color:#b03a24" onclick="deleteOpinionFromModal()">Xóa</button
+          ><button type="submit" class="btn primary">Lưu thay đổi</button>
+        </div>
+      </form>
+    </div>
+    <div class="modal-backdrop" id="form-manager-modal">
+      <div class="modal-card">
+        <div class="eyebrow">Google Form</div>
+        <h2>Quản lý Form</h2>
+        <p id="managed-form-title">Đà Nẵng cuối tuần — chốt kế hoạch</p>
+        <div class="form-grid">
+          <div class="full">
+            <label for="managed-form-link">Link gửi member</label
+            ><input id="managed-form-link" readonly />
+          </div>
+        </div>
+        <div class="form-preview" id="form-response-status">
+          <b>Đang nhận phản hồi</b>Member có thể mở link và gửi ý kiến.
+        </div>
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="btn"
+            onclick="toggleFormResponses()"
+            id="response-toggle"
+          >
+            Dừng nhận phản hồi</button
+          ><button type="button" class="btn" onclick="copyFormLink()">
+            Sao chép link</button
+          ><button
+            type="button"
+            class="btn primary"
+            onclick="openManagedForm()"
+          >
+            Mở form</button
+          ><button type="button" class="btn" onclick="closeFormManager()">
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-backdrop" id="plan-modal">
+      <form
+        class="modal-card"
+        id="plan-editor"
+        onsubmit="submitPlanActivity(event)"
+      >
+        <button type="button" class="modal-close" aria-label="Đóng popup" onclick="closePlanModal()">×</button>
+        <div class="eyebrow" id="plan-modal-eyebrow">Itinerary</div>
+        <h2 id="plan-modal-title">Thêm hoạt động</h2>
+        <p id="plan-modal-description">
+          Chọn ngày và thêm chi tiết để cập nhật lịch trình.
+        </p>
+        <div class="form-grid">
+          <div>
+            <label for="plan-activity-day">Ngày</label
+            ><select id="plan-activity-day" required>
+              <option value="0">Ngày 1 · 19 Oct</option>
+              <option value="1">Ngày 2 · 20 Oct</option>
+              <option value="2">Ngày 3 · 21 Oct</option>
+              <option value="3">Ngày 4 · 22 Oct</option>
+            </select>
+          </div>
+          <div>
+            <label for="plan-activity-time">Thời gian</label
+            ><input
+              id="plan-activity-time"
+              required
+              type="time"
+              value="10:00"
+            />
+          </div>
+          <div class="full">
+            <label for="plan-activity-title">Hoạt động</label
+            ><input
+              id="plan-activity-title"
+              required
+              placeholder="Ví dụ: Tham quan phố cổ Hội An"
+            />
+          </div>
+          <div class="full">
+            <label for="plan-activity-note">Ghi chú</label
+            ><textarea
+              id="plan-activity-note"
+              required
+              placeholder="Địa điểm, phương tiện hoặc người phụ trách"
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" id="plan-delete" style="display:none;color:#b03a24" onclick="deletePlanFromModal()">Xóa</button
+          ><button type="submit" class="btn primary" id="plan-modal-submit">
+            Thêm vào lịch trình
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="modal-backdrop" id="task-modal">
+      <form class="modal-card" onsubmit="submitTask(event)">
+        <button type="button" class="modal-close" aria-label="Đóng popup" onclick="closeTaskModal()">×</button>
+        <div class="eyebrow">Checklist task</div>
+        <h2 id="task-modal-title">Thêm công việc</h2>
+        <p>Giao việc cho member và theo dõi trạng thái thực hiện.</p>
+        <div class="form-grid">
+          <div class="full">
+            <label for="task-name">Tên công việc</label
+            ><input
+              id="task-name"
+              required
+              placeholder="Ví dụ: Xác nhận đặt xe sân bay"
+            />
+          </div>
+          <div class="full">
+            <label for="task-note">Ghi chú</label
+            ><textarea
+              id="task-note"
+              placeholder="Ví dụ: Gọi xác nhận trước ngày khởi hành"
+            ></textarea>
+          </div>
+          <div>
+            <label for="task-owner">Người phụ trách</label
+            ><select
+              id="task-owner"
+              required
+              style="
+                width: 100%;
+                border: 1px solid var(--line);
+                border-radius: 9px;
+                padding: 11px;
+                font: inherit;
+                background: #fff;
+              "
+            ></select>
+          </div>
+          <div>
+            <label for="task-status">Trạng thái</label
+            ><select
+              id="task-status"
+              required
+              style="
+                width: 100%;
+                border: 1px solid var(--line);
+                border-radius: 9px;
+                padding: 11px;
+                font: inherit;
+                background: #fff;
+              "
+            >
+              <option>Chưa hoàn thành</option>
+              <option>Hoàn thành</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" id="task-delete" style="display:none;color:#b03a24" onclick="deleteTaskFromModal()">Xóa</button
+          ><button type="submit" class="btn primary">Lưu công việc</button>
+        </div>
+      </form>
+    </div>
+    <div class="modal-backdrop" id="document-modal">
+      <form class="modal-card" id="document-editor" onsubmit="submitDocument(event)">
+        <button type="button" class="modal-close" aria-label="Đóng popup" onclick="closeDocumentModal()">×</button>
+        <div class="eyebrow">Trip vault</div>
+        <h2 id="document-modal-title">Thêm tài liệu</h2>
+        <p>Lưu thông tin booking, vé điện tử, hóa đơn và các tài liệu của chuyến đi.</p>
+        <div class="form-grid">
+          <div class="full">
+            <label for="document-name">Tên tài liệu</label
+            ><input id="document-name" required placeholder="Ví dụ: Booking khách sạn Meliá" />
+          </div>
+          <div class="full">
+            <label for="document-image">Ảnh minh hoạ</label
+            ><input id="document-image" type="file" accept="image/*" onchange="previewDocumentImage(this)" />
+            <div class="doc-image-preview" id="document-image-preview">Chưa chọn ảnh minh hoạ</div>
+          </div>
+          <div class="full">
+            <label for="document-note">Ghi chú / thông tin liên quan</label
+            ><textarea id="document-note" placeholder="Mã booking, khoản chi liên kết hoặc ghi chú cho nhóm"></textarea>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" id="document-delete" style="display:none;color:#b03a24" onclick="deleteDocumentFromModal()">Xóa</button
+          ><button type="submit" class="btn primary">Lưu tài liệu</button>
+        </div>
+      </form>
+    </div>
+    <script>
+      const opinions = [
+        [
+          "Thu An",
+          "Thêm món chay cho bữa tối ngày 1",
+          "Nhu cầu ăn uống",
+          "Mới nhận",
+        ],
+        [
+          "Minh Long",
+          "Mình vote Bà Nà Hills vào sáng ngày 2.",
+          "Hoạt động",
+          "Mới nhận",
+          [
+            "09:00",
+            "Bà Nà Hills",
+            "Đề xuất từ Minh Long · Được duyệt từ Opinion Inbox",
+          ],
+        ],
+        [
+          "Linh Pham",
+          "Có thể khởi hành sớm hơn lúc 06:30 không?",
+          "Thời gian",
+          "Đang xem xét",
+        ],
+        [
+          "Khanh Vy",
+          "Ngân sách 2 triệu/người là ổn.",
+          "Ngân sách",
+          "Đã áp dụng",
+        ],
+      ];
+      const notifications = [];
+      const expenses = [
+        ["Vé máy bay", "19 Oct · Huy thanh toán · chia 8 người", "3.600.000₫"],
+        [
+          "Khách sạn Meliá Vinpearl",
+          "19–22 Oct · Minh Long thanh toán · chia 8 người",
+          "3.250.000₫",
+        ],
+        [
+          "Đặt cọc xe 16 chỗ",
+          "19 Oct · Huy thanh toán · chia 8 người",
+          "1.000.000₫",
+        ],
+      ];
+      const documents = [
+        [
+          "✈",
+          "Vé máy bay VN112.pdf",
+          "Vé máy bay · 19 Oct 2026 · Liên kết: Bay đến Đà Nẵng",
+        ],
+        [
+          "▤",
+          "Booking Meliá Vinpearl.pdf",
+          "Khách sạn · Mã ML-22091 · Liên kết: Expense Khách sạn",
+        ],
+        [
+          "▧",
+          "Hoá đơn đặt cọc xe.jpg",
+          "Hoá đơn · 1.000.000₫ · Liên kết: Xe 16 chỗ",
+        ],
+        ["▣", "Bảo hiểm du lịch.pdf", "Bảo hiểm · Chưa export cùng Trip Brief"],
+      ];
+      const tasks = [
+        ["Chốt vé máy bay", "Huy Nguyen", true, "Lưu vé điện tử vào Documents.", "Hoàn thành"],
+        ["Đặt phòng khách sạn", "Minh Long", true, "Xác nhận mã booking và giờ check-in.", "Hoàn thành"],
+        ["Mua bảo hiểm du lịch", "Huy Nguyen", false, "Chọn gói bảo hiểm cho toàn nhóm.", "Chưa bắt đầu"],
+        ["Xác nhận thực đơn ăn chay", "Thu An", false, "Gửi số lượng khách ăn chay cho nhà hàng.", "Chưa bắt đầu"],
+        ["Tạo danh sách đồ cần mang", "Khanh Vy", false, "Chia sẻ danh sách vào nhóm trước khi đi.", "Chưa bắt đầu"],
+        ["Kiểm tra thời tiết & phương án mưa", "Huy Nguyen", false, "Cập nhật phương án thay thế nếu có mưa.", "Chưa bắt đầu"],
+      ];
+      const plansByDay = [
+        [
+          [
+            "06:30",
+            "Bay đến Đà Nẵng",
+            "VN112 · Tân Sơn Nhất → Đà Nẵng · Đã đính kèm vé điện tử",
+          ],
+          [
+            "09:30",
+            "Check-in Meliá Vinpearl Danang",
+            "39 phòng · Mã booking: ML-22091",
+          ],
+          [
+            "16:00",
+            "Bán đảo Sơn Trà & chùa Linh Ứng",
+            "Xe 16 chỗ · Đã phân công: Minh Long",
+          ],
+          [
+            "19:00",
+            "Ăn tối hải sản Bé Mặn",
+            "Đã đặt bàn cho 8 người · Có 1 suất chay",
+          ],
+        ],
+        [
+          [
+            "08:00",
+            "Bà Nà Hills",
+            "Cáp treo · Khởi hành từ khách sạn lúc 07:15",
+          ],
+          [
+            "13:00",
+            "Ăn trưa buffet",
+            "Nhà hàng Beer Plaza · Đã đặt bàn cho 8 người",
+          ],
+          ["18:30", "Dạo cầu Rồng", "Tự do khám phá ven sông Hàn"],
+        ],
+        [
+          ["09:00", "Khám phá Hội An", "Xe 16 chỗ · Đi phố cổ và chùa Cầu"],
+          ["12:30", "Cơm gà Hội An", "Ưu tiên món chay cho Thu An"],
+          [
+            "16:30",
+            "Thả đèn hoa đăng",
+            "Bến thuyền Hoài River · Chuẩn bị tiền mặt",
+          ],
+        ],
+        [
+          ["08:30", "Ăn sáng & trả phòng", "Hoàn tất check-out trước 10:00"],
+          ["11:30", "Mua đặc sản Đà Nẵng", "Chợ Hàn · Quà cho gia đình"],
+          [
+            "15:20",
+            "Bay về TP. Hồ Chí Minh",
+            "Vietnam Airlines VN113 · Có mặt ở sân bay trước 13:30",
+          ],
+        ],
+      ];
+      let activePlanDay = 0;
+      let plans = plansByDay[activePlanDay];
+      const trips = [
+        [
+          "Đà Nẵng cuối tuần",
+          "Đà Nẵng",
+          "19–22 tháng 10, 2026",
+          "8 người",
+          "Đang lên kế hoạch",
+          "16000000",
+          ["Huy Nguyen", "Minh Long", "Thu An", "Khanh Vy"],
+          null,
+          "2026-10-19",
+          "2026-10-22",
+        ],
+        [
+          "Hà Nội food tour",
+          "Hà Nội",
+          "04–06 tháng 12, 2026",
+          "5 người",
+          "Bản nháp",
+          "12000000",
+          ["Huy Nguyen", "Minh Long", "Thu An", "Khanh Vy"],
+          null,
+          "2026-12-04",
+          "2026-12-06",
+        ],
+        [
+          "Phú Quốc nghỉ dưỡng",
+          "Phú Quốc",
+          "12–15 tháng 2, 2027",
+          "10 người",
+          "Đã hoàn tất",
+          "20000000",
+          ["Huy Nguyen", "Minh Long", "Thu An", "Khanh Vy"],
+          null,
+          "2027-02-12",
+          "2027-02-15",
+        ],
+      ];
+      const covers = [
+        "photo-1507525428034-b723cf961d3e",
+        "photo-1506012787146-f92b2d7d6d96",
+        "photo-1506794778202-cad84cf45f1d",
+      ];
+      let activeTrip = 0;
+      let editingTripIndex = null;
+      let editingOpinionIndex = null;
+      let googleForm = null;
+      const defaultMembers = ["Huy Nguyen", "Minh Long", "Thu An", "Khanh Vy"];
+      let editingPlanIndex = null;
+      const activeMembers = () => trips[activeTrip][6] || defaultMembers;
+      const initials = (name) =>
+        name
+          .split(" ")
+          .map((x) => x[0])
+          .slice(-2)
+          .join("");
+      const ask = (label, value = "") => {
+        const v = prompt(label, value);
+        return v === null ? null : v.trim();
+      };
+      const safe = (s) =>
+        String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      function updateCountdown() {
+        const target = new Date("2026-10-19T06:30:00"),
+          diff = target - Date.now(),
+          el = document.querySelector("#countdown");
+        if (diff <= 0) {
+          el.textContent = "Đang diễn ra";
+          return;
+        }
+        const days = Math.ceil(diff / 86400000);
+        el.textContent = `Còn ${days} ngày`;
+      }
+      function login(provider) {
+        const email = document.querySelector("#login-email").value.trim(),
+          password = document.querySelector("#login-password").value;
+        const error = document.querySelector("#login-error");
+        if (!provider && (!email || !password)) {
+          error.textContent = "Hãy nhập email và mật khẩu để tiếp tục.";
+          return;
+        }
+        document.querySelector("#login-screen").style.display = "none";
+        document.querySelector("#app-shell").classList.remove("hidden");
+        showToast(
+          provider ? "Đã đăng nhập Google (demo)." : "Chào mừng trở lại, Huy!",
+        );
+      }
+      function logout() {
+        document.querySelector("#app-shell").classList.add("hidden");
+        document.querySelector("#login-screen").style.display = "grid";
+        document.querySelector("#login-password").focus();
+      }
+      function actions(kind, i) {
+        const edit =
+          kind === "opinion"
+            ? `openOpinionDetail(${i})`
+            : kind === "plan"
+              ? `openPlanDetail(${i})`
+              : kind === "task"
+                ? `openTaskModal(${i})`
+                : `editItem('${kind}',${i})`;
+        return `<span class="row-actions"><button class="small-btn" onclick="${edit}">Sửa</button><button class="small-btn delete" onclick="deleteItem('${kind}',${i})">Xóa</button></span>`;
+      }
+      function render() {
+        const trip = trips[activeTrip],
+          cover = `https://images.unsplash.com/${covers[activeTrip % covers.length]}?auto=format&fit=crop&w=1300&q=85`;
+        document.querySelector("#current-trip").textContent = trip[0];
+        document.querySelector("#trip-cover").style.backgroundImage =
+          `linear-gradient(180deg,rgba(10,47,59,.05),rgba(10,47,59,.86)),url('${cover}')`;
+        document.querySelector("#trip-hero").style.backgroundImage =
+          `linear-gradient(100deg,rgba(255,245,223,.96) 0%,rgba(255,245,223,.85) 55%,rgba(255,245,223,.1)),url('${cover}')`;
+        document.querySelector("#breadcrumb-trip").textContent = trip[0];
+        document.querySelector("#trip-title").textContent = trip[0];
+        document.querySelector("#trip-summary").textContent =
+          `${trip[2]} · ${trip[3]} · Leader: Huy Nguyen`;
+        document.querySelector("#trip-list").innerHTML = trips
+          .map(
+            (x, i) =>
+              `<article class="trip-card" onclick="openTrip(${i})"><span class="tag ${x[4] === "Bản nháp" ? "pending" : ""}">${x[4]}</span><h2 style="margin-top:13px">${safe(x[0])}</h2><p>${safe(x[1])} · ${safe(x[2])}</p><footer><span>👥 ${safe(x[3])}</span><span>Mở workspace →</span></footer></article>`,
+          )
+          .join("");
+        document.querySelector("#opinion-list").innerHTML = opinions
+          .map(
+            (x, i) =>
+              `<div class="opinion"><span class="avatar">${initials(x[0])}</span><div class="opinion-main"><h3>${safe(x[1])}</h3><p>${safe(x[0])} · ${safe(x[2])}</p></div><span class="tag ${x[3] === "Mới nhận" ? "pending" : ""}">${x[3]}</span>${x[3] !== "Đã áp dụng" ? `<button class="text-link" onclick="approveOpinion(${i})">Duyệt</button>` : ""}${actions("opinion", i)}</div>`,
+          )
+          .join("");
+        document.querySelector("#expense-list").innerHTML = expenses
+          .map(
+            (x, i) =>
+              `<div class="expense-row"><span class="doc-icon">₫</span><div><strong>${safe(x[0])}</strong><small>${safe(x[1])}</small></div><span class="amount">${safe(x[2])}</span>${actions("expense", i)}</div>`,
+          )
+          .join("");
+        document.querySelector("#document-list").innerHTML = documents
+          .map(
+            (x, i) =>
+              `<div class="document" style="cursor:pointer" onclick="openDocumentModal(${i})">${x[3] ? `<span class="doc-icon has-image" style="background-image:url('${x[3]}')"></span>` : `<span class="doc-icon">${x[0]}</span>`}<div><h3>${safe(x[1])}</h3><small>${safe(x[2])}</small></div><button class="download" title="Mở file" onclick="event.stopPropagation()">↗</button></div>`,
+          )
+          .join("");
+        document.querySelector("#checklist-list").innerHTML = tasks
+          .map(
+            (x, i) =>
+              `<div class="check-row" style="cursor:pointer" onclick="openTaskModal(${i})"><input type="checkbox" ${x[2] ? "checked" : ""} onclick="event.stopPropagation()" onchange="toggleTask(${i})"><label class="${x[2] ? "done" : ""}">${safe(x[0])}<br><small class="hint">${safe(x[3] || "Chưa có ghi chú")}</small></label><span class="assignee-name">${safe(x[1])}</span></div>`,
+          )
+          .join("");
+        const completedTasks = tasks.filter((x) => x[2]).length;
+        const taskProgress = tasks.length
+          ? Math.round((completedTasks / tasks.length) * 100)
+          : 0;
+        document.querySelector("#overview-task-summary").textContent =
+          `${completedTasks} / ${tasks.length} việc hoàn thành`;
+        document.querySelector("#overview-task-progress").style.width =
+          `${taskProgress}%`;
+        document.querySelector("#checklist-task-summary").textContent =
+          `${completedTasks} / ${tasks.length} việc hoàn thành`;
+        document.querySelector("#checklist-task-progress").style.width =
+          `${taskProgress}%`;
+        document.querySelector("#overview-task-list").innerHTML = tasks
+          .slice(0, 4)
+          .map(
+            (x, i) =>
+              `<div class="check-row"><input type="checkbox" ${x[2] ? "checked" : ""} onchange="toggleTask(${i})"><label class="${x[2] ? "done" : ""}">${safe(x[0])}</label><span class="assignee-name">${safe(x[1])}</span></div>`,
+          )
+          .join("");
+        document.querySelector("#plan-list").innerHTML = plans
+          .map(
+            (x, i) =>
+              `<div class="plan-card" style="cursor:pointer" onclick="openPlanDetail(${i})"><span class="time-chip">${safe(x[0])}</span><div><b>${safe(x[1])}</b><p>${safe(x[2])}</p></div></div>`,
+          )
+          .join("");
+      }
+      function showToast(message) {
+        const t = document.querySelector("#toast");
+        t.textContent = message;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2600);
+      }
+      function approveOpinion(i) {
+        const opinion = opinions[i];
+        if (opinion[3] === "Đã áp dụng") return;
+        opinion[3] = "Đã áp dụng";
+        notifications.unshift([opinion[0], opinion[1], opinion[2]]);
+        render();
+        showToast("Đã duyệt ý kiến và tạo thông báo cần xử lý.");
+      }
+      function approveAndAddToPlan(i) {
+        const opinion = opinions[i];
+        if (opinion[3] === "Đã áp dụng" || !opinion[4]) return;
+        plans.push(opinion[4]);
+        opinion[3] = "Đã áp dụng";
+        render();
+        showToast("Đã duyệt và thêm hoạt động vào Plan.");
+      }
+      function dismissNotification(i) {
+        notifications.splice(i, 1);
+        renderNotifications();
+        showToast("Đã đánh dấu thông báo là đã xử lý.");
+      }
+      function updateGoogleFormUI() {
+        const action = document.querySelector("#google-form-action"),
+          preview = document.querySelector("#form-preview");
+        if (!googleForm) {
+          action.textContent = "＋ Tạo Google Form";
+          preview.innerHTML =
+            "<b>Chưa có form đang dùng</b>Tạo form để gửi link lấy ý kiến cho member.";
+          return;
+        }
+        action.textContent = "⚙ Quản lý Form";
+        preview.innerHTML = `<b>${safe(googleForm.title)}</b>${googleForm.accepting ? "Đang nhận phản hồi · Có link gửi member" : "Đã dừng nhận phản hồi"}`;
+      }
+      function handleGoogleFormAction() {
+        if (googleForm) {
+          openFormManager();
+          return;
+        }
+        openGoogleFormModal();
+      }
+      function openGoogleFormModal() {
+        document.querySelector("#google-form-modal").classList.add("show");
+        document.querySelector("#google-form-title").focus();
+      }
+      function closeGoogleFormModal() {
+        document.querySelector("#google-form-modal").classList.remove("show");
+      }
+      function submitGoogleForm(event) {
+        event.preventDefault();
+        const title = document.querySelector("#google-form-title").value.trim();
+        googleForm = {
+          title,
+          link: "https://forms.gle/trippilot-demo",
+          accepting: true,
+        };
+        closeGoogleFormModal();
+        updateGoogleFormUI();
+        showToast(`Đã tạo Google Form demo: ${title}`);
+      }
+      function openFormManager() {
+        document.querySelector("#managed-form-title").textContent =
+          googleForm.title;
+        document.querySelector("#managed-form-link").value = googleForm.link;
+        document.querySelector("#form-manager-modal").classList.add("show");
+        updateResponseStatus();
+      }
+      function closeFormManager() {
+        document.querySelector("#form-manager-modal").classList.remove("show");
+      }
+      function updateResponseStatus() {
+        const status = document.querySelector("#form-response-status"),
+          toggle = document.querySelector("#response-toggle");
+        status.innerHTML = googleForm.accepting
+          ? "<b>Đang nhận phản hồi</b>Member có thể mở link và gửi ý kiến."
+          : "<b>Đã dừng nhận phản hồi</b>Link vẫn tồn tại nhưng không nhận phản hồi mới.";
+        toggle.textContent = googleForm.accepting
+          ? "Dừng nhận phản hồi"
+          : "Mở nhận phản hồi";
+      }
+      function toggleFormResponses() {
+        googleForm.accepting = !googleForm.accepting;
+        updateResponseStatus();
+        updateGoogleFormUI();
+        showToast(
+          googleForm.accepting
+            ? "Đã mở nhận phản hồi."
+            : "Đã dừng nhận phản hồi.",
+        );
+      }
+      function copyFormLink() {
+        showToast("Đã sao chép link form demo.");
+      }
+      function openManagedForm() {
+        showToast("Đang mở Google Form demo…");
+      }
+      function openOpinionDetail(i) {
+        const item = opinions[i],
+          set = (id, value) => (document.querySelector(id).value = value);
+        editingOpinionIndex = i;
+        set("#opinion-member", item[0]);
+        set("#opinion-content", item[1]);
+        set("#opinion-category", item[2]);
+        set("#opinion-status", item[3]);
+        document.querySelector("#opinion-modal").classList.add("show");
+        document.querySelector("#opinion-content").focus();
+      }
+      function closeOpinionModal() {
+        editingOpinionIndex = null;
+        document.querySelector("#opinion-modal").classList.remove("show");
+      }
+      function saveOpinion(event) {
+        event.preventDefault();
+        if (editingOpinionIndex === null) return;
+        const value = (id) => document.querySelector(id).value.trim();
+        opinions[editingOpinionIndex] = [
+          value("#opinion-member"),
+          value("#opinion-content"),
+          value("#opinion-category"),
+          value("#opinion-status"),
+        ];
+        closeOpinionModal();
+        render();
+        showToast("Đã cập nhật ý kiến trong Inbox.");
+      }
+      function deleteOpinionFromModal() {
+        if (editingOpinionIndex === null || !confirm("Xóa ý kiến này?")) return;
+        opinions.splice(editingOpinionIndex, 1);
+        closeOpinionModal();
+        render();
+        showToast("Đã xóa ý kiến khỏi Inbox.");
+      }
+      function applyVote() {
+        showToast("Đã thêm Bà Nà Hills vào Plan ngày 2.");
+      }
+      function toggleTask(i) {
+        tasks[i][2] = !tasks[i][2];
+        render();
+        showToast(
+          tasks[i][2] ? "Đã hoàn thành checklist." : "Đã mở lại checklist.",
+        );
+      }
+      function addExpense() {
+        const name = ask("Tên khoản chi");
+        if (!name) return;
+        const amount = ask("Số tiền", "1.000.000₫");
+        if (!amount) return;
+        expenses.unshift([
+          name,
+          "Hôm nay · Huy thanh toán · chia 8 người",
+          amount,
+        ]);
+        render();
+        showToast("Đã thêm khoản chi.");
+      }
+      let editingTask = null;
+      function addTask() {
+        openTaskModal();
+      }
+      function openTaskModal(index = null) {
+        editingTask = index;
+        const form = document.querySelector("#task-modal form"),
+          owner = document.querySelector("#task-owner");
+        owner.innerHTML = activeMembers()
+          .map(
+            (member) =>
+              `<option value="${safe(member)}">${safe(member)}</option>`,
+          )
+          .join("");
+        form.reset();
+        document.querySelector("#task-modal-title").textContent =
+          index === null ? "Thêm công việc" : "Chi tiết công việc";
+        document.querySelector("#task-delete").style.display =
+          index === null ? "none" : "inline-block";
+        if (index !== null) {
+          const task = tasks[index];
+          document.querySelector("#task-name").value = task[0];
+          owner.value = task[1];
+          document.querySelector("#task-note").value = task[3] || "";
+          document.querySelector("#task-status").value =
+            task[4] || (task[2] ? "Hoàn thành" : "Chưa bắt đầu");
+        }
+        document.querySelector("#task-modal").classList.add("show");
+      }
+      function closeTaskModal() {
+        document.querySelector("#task-modal").classList.remove("show");
+        editingTask = null;
+      }
+      function deleteTaskFromModal() {
+        if (editingTask === null || !confirm("Xóa công việc này?")) return;
+        tasks.splice(editingTask, 1);
+        closeTaskModal();
+        render();
+        showToast("Đã xóa công việc khỏi Checklist.");
+      }
+      function submitTask(event) {
+        event.preventDefault();
+        const name = document.querySelector("#task-name").value.trim(),
+          owner = document.querySelector("#task-owner").value,
+          note = document.querySelector("#task-note").value.trim(),
+          status = document.querySelector("#task-status").value,
+          isNew = editingTask === null,
+          complete = status === "Hoàn thành",
+          task = [name, owner, complete, note, status];
+        if (isNew) tasks.push(task);
+        else tasks[editingTask] = task;
+        closeTaskModal();
+        render();
+        showToast(isNew ? "Đã thêm công việc." : "Đã cập nhật công việc.");
+      }
+      function selectPlanDay(day) {
+        activePlanDay = day;
+        plans = plansByDay[day];
+        document
+          .querySelectorAll("#plan-tabs button")
+          .forEach((button, i) => button.classList.toggle("active", i === day));
+        render();
+      }
+      function openPlanModal() {
+        editingPlanIndex = null;
+        document.querySelector("#plan-editor").reset();
+        document.querySelector("#plan-modal-eyebrow").textContent = "Itinerary";
+        document.querySelector("#plan-modal-title").textContent =
+          "Thêm hoạt động";
+        document.querySelector("#plan-modal-description").textContent =
+          "Chọn ngày và thêm chi tiết để cập nhật lịch trình.";
+        document.querySelector("#plan-modal-submit").textContent =
+          "Thêm vào lịch trình";
+        document.querySelector("#plan-delete").style.display = "none";
+        document.querySelector("#plan-activity-day").disabled = false;
+        document.querySelector("#plan-activity-day").value = activePlanDay;
+        document.querySelector("#plan-activity-time").value = "10:00";
+        document.querySelector("#plan-modal").classList.add("show");
+        document.querySelector("#plan-activity-title").focus();
+      }
+      function openPlanDetail(i) {
+        const activity = plans[i],
+          set = (id, value) => (document.querySelector(id).value = value);
+        editingPlanIndex = i;
+        document.querySelector("#plan-modal-eyebrow").textContent =
+          "Itinerary detail";
+        document.querySelector("#plan-modal-title").textContent =
+          "Chi tiết hoạt động";
+        document.querySelector("#plan-modal-description").textContent =
+          "Xem, chỉnh sửa hoặc xóa hoạt động trong lịch trình.";
+        document.querySelector("#plan-modal-submit").textContent =
+          "Lưu thay đổi";
+        document.querySelector("#plan-delete").style.display = "inline-block";
+        document.querySelector("#plan-activity-day").disabled = true;
+        set("#plan-activity-day", activePlanDay);
+        set("#plan-activity-time", activity[0]);
+        set("#plan-activity-title", activity[1]);
+        set("#plan-activity-note", activity[2]);
+        document.querySelector("#plan-modal").classList.add("show");
+        document.querySelector("#plan-activity-title").focus();
+      }
+      function closePlanModal() {
+        editingPlanIndex = null;
+        document.querySelector("#plan-modal").classList.remove("show");
+      }
+      function deletePlanFromModal() {
+        if (editingPlanIndex === null || !confirm("Xóa hoạt động này?")) return;
+        plansByDay[activePlanDay].splice(editingPlanIndex, 1);
+        closePlanModal();
+        selectPlanDay(activePlanDay);
+        showToast("Đã xóa hoạt động khỏi lịch trình.");
+      }
+      function submitPlanActivity(event) {
+        event.preventDefault();
+        const value = (id) => document.querySelector(id).value.trim(),
+          day = Number(value("#plan-activity-day")),
+          activity = [
+            value("#plan-activity-time"),
+            value("#plan-activity-title"),
+            value("#plan-activity-note"),
+          ];
+        if (editingPlanIndex !== null) {
+          plansByDay[day][editingPlanIndex] = activity;
+          closePlanModal();
+          event.target.reset();
+          selectPlanDay(day);
+          showToast("Đã cập nhật hoạt động trong lịch trình.");
+          return;
+        }
+        plansByDay[day].push(activity);
+        closePlanModal();
+        event.target.reset();
+        selectPlanDay(day);
+        showToast("Đã thêm hoạt động vào lịch trình.");
+      }
+      function addDocument() {
+        openDocumentModal();
+      }
+      let editingDocumentIndex = null;
+      function openDocumentModal(index = null) {
+        editingDocumentIndex = index;
+        const form = document.querySelector("#document-editor");
+        const preview = document.querySelector("#document-image-preview");
+        form.reset();
+        preview.classList.remove("has-image");
+        preview.style.backgroundImage = "";
+        preview.textContent = "Chưa chọn ảnh minh hoạ";
+        document.querySelector("#document-modal-title").textContent =
+          index === null ? "Thêm tài liệu" : "Chi tiết tài liệu";
+        document.querySelector("#document-delete").style.display =
+          index === null ? "none" : "inline-block";
+        if (index !== null) {
+          const documentItem = documents[index];
+          document.querySelector("#document-name").value = documentItem[1];
+          document.querySelector("#document-note").value = documentItem[2];
+          if (documentItem[3]) {
+            preview.style.backgroundImage = `url('${documentItem[3]}')`;
+            preview.classList.add("has-image");
+            preview.textContent = "Ảnh minh hoạ hiện tại";
+          }
+        }
+        document.querySelector("#document-modal").classList.add("show");
+      }
+      function previewDocumentImage(input) {
+        const preview = document.querySelector("#document-image-preview");
+        const file = input.files[0];
+        if (!file) return;
+        preview.style.backgroundImage = `url('${URL.createObjectURL(file)}')`;
+        preview.classList.add("has-image");
+        preview.textContent = "Ảnh minh hoạ đã chọn";
+      }
+      function closeDocumentModal() {
+        document.querySelector("#document-modal").classList.remove("show");
+        editingDocumentIndex = null;
+      }
+      function submitDocument(event) {
+        event.preventDefault();
+        const name = document.querySelector("#document-name").value.trim();
+        const note = document.querySelector("#document-note").value.trim();
+        const file = document.querySelector("#document-image").files[0];
+        const image = file
+          ? URL.createObjectURL(file)
+          : editingDocumentIndex !== null
+            ? documents[editingDocumentIndex][3] || ""
+            : "";
+        const documentItem = [
+          editingDocumentIndex !== null
+            ? documents[editingDocumentIndex][0]
+            : "▣",
+          name,
+          note || "Chưa có ghi chú",
+          image,
+        ];
+        const isNew = editingDocumentIndex === null;
+        if (isNew) documents.unshift(documentItem);
+        else documents[editingDocumentIndex] = documentItem;
+        closeDocumentModal();
+        render();
+        showToast(isNew ? "Đã thêm tài liệu." : "Đã cập nhật tài liệu.");
+      }
+      function deleteDocumentFromModal() {
+        if (
+          editingDocumentIndex === null ||
+          !confirm("Xóa tài liệu này?")
+        )
+          return;
+        documents.splice(editingDocumentIndex, 1);
+        closeDocumentModal();
+        render();
+        showToast("Đã xóa tài liệu.");
+      }
+      function editItem(kind, i) {
+        const source = {
+            opinion: opinions,
+            expense: expenses,
+            document: documents,
+            task: tasks,
+            plan: plans,
+          }[kind],
+          item = source[i];
+        let v;
+        if (kind === "task") {
+          v = ask("Tên công việc", item[0]);
+          if (v !== null && v) item[0] = v;
+          v = ask("Người phụ trách", item[1]);
+          if (v !== null && v) item[1] = v;
+        } else if (kind === "plan") {
+          v = ask("Tên hoạt động", item[1]);
+          if (v !== null && v) item[1] = v;
+          v = ask("Ghi chú", item[2]);
+          if (v !== null && v) item[2] = v;
+        } else {
+          v = ask(
+            kind === "opinion"
+              ? "Nội dung ý kiến"
+              : kind === "expense"
+                ? "Tên khoản chi"
+                : "Tên document",
+            item[1] || item[0],
+          );
+          if (v !== null && v) {
+            if (kind === "expense") item[0] = v;
+            else item[1] = v;
+          }
+        }
+        render();
+        showToast("Đã cập nhật dữ liệu mẫu.");
+      }
+      function deleteItem(kind, i) {
+        if (!confirm("Xóa dữ liệu mẫu này?")) return;
+        ({
+          opinion: opinions,
+          expense: expenses,
+          document: documents,
+          task: tasks,
+          plan: plans,
+        })[kind].splice(i, 1);
+        render();
+        showToast("Đã xóa dữ liệu mẫu.");
+      }
+      function toggleSidebar() {
+        const sidebar = document.querySelector("#sidebar"),
+          open = sidebar.classList.toggle("mobile-open");
+        document
+          .querySelector("#mobile-sidebar-backdrop")
+          .classList.toggle("show", open);
+      }
+      function closeSidebar() {
+        document.querySelector("#sidebar").classList.remove("mobile-open");
+        document
+          .querySelector("#mobile-sidebar-backdrop")
+          .classList.remove("show");
+      }
+      function showView(id) {
+        document
+          .querySelectorAll(".view")
+          .forEach((v) => v.classList.toggle("active", v.id === id));
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((v) => v.classList.toggle("active", v.dataset.view === id));
+        closeSidebar();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function updateTripSummary() {
+        const trip = trips[activeTrip],
+          statusClass = {
+            "Bản nháp": "status-draft",
+            "Đang lên kế hoạch": "status-planning",
+            "Đã chốt": "status-confirmed",
+            "Đang diễn ra": "status-ongoing",
+            "Đã hoàn tất": "status-completed",
+          }[trip[4]];
+        document.querySelector("#trip-destination").textContent = trip[1];
+        document.querySelector("#trip-budget").textContent =
+          `${Number(trip[5]).toLocaleString("vi-VN")}₫`;
+        document.querySelector("#trip-status").textContent = trip[4];
+        document.querySelector("#trip-status-badge").className =
+          `status ${statusClass}`;
+      }
+      function applyLocalCover() {
+        const local = trips[activeTrip][7];
+        if (!local) return;
+        document.querySelector("#trip-cover").style.backgroundImage =
+          `linear-gradient(180deg,rgba(10,47,59,.05),rgba(10,47,59,.86)),url('${local}')`;
+        document.querySelector("#trip-hero").style.backgroundImage =
+          `linear-gradient(100deg,rgba(255,245,223,.96) 0%,rgba(255,245,223,.85) 55%,rgba(255,245,223,.1)),url('${local}')`;
+      }
+      function openTrip(i) {
+        activeTrip = i;
+        render();
+        updateTripSummary();
+        applyLocalCover();
+        showView("overview");
+        showToast("Đã mở workspace " + trips[i][0] + ".");
+      }
+      function openTripModal(mode = "create") {
+        const editing = mode === "edit",
+          trip = trips[activeTrip],
+          set = (id, value) => (document.querySelector(id).value = value);
+        editingTripIndex = editing ? activeTrip : null;
+        document.querySelector("#trip-modal-eyebrow").textContent = editing
+          ? "Edit trip"
+          : "New trip";
+        document.querySelector("#trip-modal-title").textContent = editing
+          ? "Chỉnh sửa chuyến đi"
+          : "Tạo chuyến đi mới";
+        document.querySelector("#trip-modal-description").textContent = editing
+          ? "Cập nhật thông tin workspace của chuyến đi này."
+          : "Khởi tạo workspace với các thông tin cơ bản. Bạn vẫn có thể chỉnh sau.";
+        document.querySelector("#trip-modal-submit").textContent = editing
+          ? "Lưu thay đổi"
+          : "Tạo workspace";
+        document.querySelector("#new-trip-cover").required = !editing;
+        if (editing) {
+          set("#new-trip-name", trip[0]);
+          set("#new-trip-destination", trip[1]);
+          set("#new-trip-member-names", activeMembers().join(", "));
+          set("#new-trip-start", trip[8] || "");
+          set("#new-trip-end", trip[9] || "");
+          set("#new-trip-status", trip[4]);
+          set("#new-trip-budget", trip[5] || "");
+        } else {
+          document.querySelector("#trip-form").reset();
+          set("#new-trip-status", "Bản nháp");
+          set("#new-trip-budget", "12000000");
+        }
+        document.querySelector("#trip-modal").classList.add("show");
+        document.querySelector("#new-trip-name").focus();
+      }
+      function closeTripModal() {
+        editingTripIndex = null;
+        document.querySelector("#trip-modal").classList.remove("show");
+      }
+      function submitTrip(event) {
+        event.preventDefault();
+        const value = (id) => document.querySelector(id).value,
+          file = document.querySelector("#new-trip-cover").files[0];
+        const name = value("#new-trip-name"),
+          destination = value("#new-trip-destination"),
+          start = value("#new-trip-start"),
+          end = value("#new-trip-end"),
+          status = value("#new-trip-status"),
+          budget = value("#new-trip-budget"),
+          memberNames = value("#new-trip-member-names")
+            .split(",")
+            .map((x) => x.trim())
+            .filter(Boolean),
+          localCover = file ? URL.createObjectURL(file) : null,
+          tripData = [
+            name,
+            destination,
+            `${start} → ${end}`,
+            `${memberNames.length} người`,
+            status,
+            budget,
+            memberNames,
+            localCover,
+            start,
+            end,
+          ];
+        if (editingTripIndex !== null) {
+          const previous = trips[editingTripIndex];
+          tripData[7] = localCover || previous[7];
+          trips[editingTripIndex] = tripData;
+          activeTrip = editingTripIndex;
+          closeTripModal();
+          event.target.reset();
+          render();
+          updateTripSummary();
+          applyLocalCover();
+          showToast("Đã cập nhật thông tin chuyến đi.");
+          return;
+        }
+        trips.unshift(tripData);
+        closeTripModal();
+        event.target.reset();
+        openTrip(0);
+        showToast("Đã tạo trip mới cùng ảnh mô tả và member.");
+      }
+      function tripStatusClass(status) {
+        return (
+          {
+            "Bản nháp": "status-draft",
+            "Đang lên kế hoạch": "status-planning",
+            "Đã chốt": "status-confirmed",
+            "Đang diễn ra": "status-ongoing",
+            "Đã hoàn tất": "status-completed",
+          }[status] || "status-draft"
+        );
+      }
+      function renderTripCollection() {
+        document.querySelector("#trip-list").innerHTML = trips
+          .map(
+            (x, i) =>
+              `<article class="trip-card" onclick="openTrip(${i})"><span class="tag ${tripStatusClass(x[4])}">${x[4]}</span><h2 style="margin-top:13px">${safe(x[0])}</h2><p>${safe(x[1])} · ${safe(x[2])}</p><footer><span>👥 ${safe(x[3])}</span><span>Mở workspace →</span></footer></article>`,
+          )
+          .join("");
+      }
+      function renderOpinions() {
+        document.querySelector("#opinion-list").innerHTML = opinions
+          .map((x, i) => {
+            const applied = x[3] === "Đã áp dụng",
+              primary = applied
+                ? '<span class="small-btn applied">Đã áp dụng</span>'
+                : x[4]
+                  ? `<button class="small-btn apply" onclick="event.stopPropagation();approveAndAddToPlan(${i})">Duyệt & thêm Plan</button>`
+                  : `<button class="small-btn apply" onclick="event.stopPropagation();approveOpinion(${i})">Duyệt</button>`;
+            return `<div class="opinion" style="cursor:pointer" onclick="openOpinionDetail(${i})"><span class="avatar">${initials(x[0])}</span><div class="opinion-main"><h3>${safe(x[1])}</h3><p>${safe(x[0])} · ${safe(x[2])}</p></div><span class="opinion-actions">${primary}</span></div>`;
+          })
+          .join("");
+      }
+      function renderNotifications() {
+        const list = document.querySelector("#notification-list");
+        list.innerHTML = notifications.length
+          ? notifications
+              .map(
+                (x, i) =>
+                  `<div class="notification-row"><span class="avatar">${initials(x[0])}</span><div class="notification-copy"><h3>${safe(x[1])}</h3><p>${safe(x[0])} · ${safe(x[2])} · Đã duyệt, chưa thêm vào Plan</p></div><button class="small-btn" onclick="dismissNotification(${i})">Đánh dấu đã xử lý</button></div>`,
+              )
+              .join("")
+          : '<p class="hint">Chưa có thông báo cần xử lý.</p>';
+      }
+      const baseRender = render;
+      render = function () {
+        baseRender();
+        renderTripCollection();
+        renderOpinions();
+        renderNotifications();
+      };
+      document
+        .querySelectorAll("[data-view]")
+        .forEach((btn) =>
+          btn.addEventListener("click", () => showView(btn.dataset.view)),
+        );
+      document
+        .querySelectorAll(".export-button")
+        .forEach((btn) =>
+          btn.addEventListener("click", () =>
+            showToast("PDF demo đang được tạo… (mock interaction)"),
+          ),
+        );
+      render();
+      updateCountdown();
+      setInterval(updateCountdown, 60000);
+    </script>
+  </body>
 </html>
