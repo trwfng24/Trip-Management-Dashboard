@@ -133,6 +133,21 @@
         font-size: 12px;
         margin-top: 8px;
       }
+      .auth-switch {
+        font-size: 12px;
+        text-align: center;
+        margin: 22px 0 0;
+        color: var(--muted);
+      }
+      .auth-link {
+        border: 0;
+        background: none;
+        color: var(--forest);
+        font: inherit;
+        font-weight: 800;
+        padding: 0;
+        cursor: pointer;
+      }
       .app.hidden {
         display: none;
       }
@@ -1184,14 +1199,65 @@
             value="demo123"
           /><button class="btn primary" onclick="login()">Đăng nhập</button>
           <div class="login-error" id="login-error"></div>
-          <div class="login-divider">hoặc</div>
           <button class="google-btn" onclick="login('google')">
             G&nbsp; Tiếp tục với Google
           </button>
+          <div class="login-divider">hoặc</div>
           <p style="font-size: 12px; text-align: center; margin-top: 22px">
             Bản mock: dùng email/mật khẩu bất kỳ để vào app.
           </p>
+          <p class="auth-switch">
+            Chưa có tài khoản?
+            <button class="auth-link" type="button" onclick="showRegister()">
+              Tạo tài khoản
+            </button>
+          </p>
         </div>
+      </div>
+    </section>
+    <section class="login-screen" id="register-screen" style="display: none">
+      <div class="login-art">
+        <div class="brand"><span class="brand-mark">✦</span> TripPilot</div>
+        <div>
+          <div class="eyebrow" style="color: #dff46a">
+            Create your leader workspace
+          </div>
+          <h1>Bắt đầu chuyến đi tiếp theo thật gọn gàng.</h1>
+          <p>
+            Tạo tài khoản để lên kế hoạch, gom ý kiến và quản lý cả nhóm tại
+            một nơi.
+          </p>
+        </div>
+        <small>© 2026 TripPilot</small>
+      </div>
+      <div class="login-card-wrap">
+        <form class="login-card" onsubmit="register(event)">
+          <div class="brand" style="color: #176b50">
+            <span class="brand-mark">✦</span> TripPilot
+          </div>
+          <h2>Tạo tài khoản</h2>
+          <p>Thiết lập workspace quản lý chuyến đi của bạn.</p>
+          <label for="register-name">Tên hiển thị</label>
+          <input id="register-name" required placeholder="Ví dụ: Huy Nguyen" />
+          <label for="register-email">Email</label>
+          <input id="register-email" type="email" required placeholder="you@example.com" />
+          <label for="register-password">Mật khẩu</label>
+          <input id="register-password" type="password" required minlength="6" placeholder="Ít nhất 6 ký tự" />
+          <label for="register-confirm-password">Nhập lại mật khẩu</label>
+          <input id="register-confirm-password" type="password" required minlength="6" placeholder="Nhập lại mật khẩu" />
+          <button class="btn primary" type="submit">Tạo tài khoản</button>
+          <div class="login-error" id="register-error"></div>
+          <button class="google-btn" type="button" onclick="register('google')">
+            G&nbsp; Đăng ký với Google
+          </button>
+          <div class="login-divider">hoặc</div>
+          <p class="auth-switch">
+            Đã có tài khoản?
+            <button class="auth-link" type="button" onclick="showLogin()">
+              Đăng nhập
+            </button>
+          </p>
+        </form>
       </div>
     </section>
     <div class="app hidden" id="app-shell">
@@ -2099,8 +2165,42 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           provider ? "Đã đăng nhập Google (demo)." : "Chào mừng trở lại, Huy!",
         );
       }
+      function showRegister() {
+        document.querySelector("#login-screen").style.display = "none";
+        document.querySelector("#register-screen").style.display = "grid";
+        document.querySelector("#register-name").focus();
+      }
+      function showLogin() {
+        document.querySelector("#register-screen").style.display = "none";
+        document.querySelector("#login-screen").style.display = "grid";
+        document.querySelector("#login-email").focus();
+      }
+      function register(provider) {
+        if (provider && typeof provider.preventDefault === "function") {
+          provider.preventDefault();
+          provider = null;
+        }
+        if (!provider) {
+          const name = document.querySelector("#register-name").value.trim();
+          const password = document.querySelector("#register-password").value;
+          const confirmation = document.querySelector("#register-confirm-password").value;
+          const error = document.querySelector("#register-error");
+          if (!name) {
+            error.textContent = "Hãy nhập tên hiển thị để tiếp tục.";
+            return;
+          }
+          if (password !== confirmation) {
+            error.textContent = "Mật khẩu xác nhận chưa khớp.";
+            return;
+          }
+        }
+        document.querySelector("#register-screen").style.display = "none";
+        document.querySelector("#app-shell").classList.remove("hidden");
+        showToast(provider ? "Đã đăng ký với Google (demo)." : "Đã tạo tài khoản thành công.");
+      }
       function logout() {
         document.querySelector("#app-shell").classList.add("hidden");
+        document.querySelector("#register-screen").style.display = "none";
         document.querySelector("#login-screen").style.display = "grid";
         document.querySelector("#login-password").focus();
       }
