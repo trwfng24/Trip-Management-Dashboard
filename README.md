@@ -1,58 +1,81 @@
-# TripPilot — Trip Management Dashboard
+# DiDiEms — Trip Management Dashboard
 
-## Tổng quan dự án
+DiDiEms là mockup web quản lý chuyến đi nhóm. Ứng dụng gom việc lập kế hoạch, phối hợp thành viên, theo dõi chi phí và lưu tài liệu vào từng workspace chuyến đi.
 
-TripPilot là bản mockup dashboard hỗ trợ leader quản lý chuyến đi nhóm tại một nơi. Ứng dụng tập trung vào việc lập kế hoạch, thu thập ý kiến thành viên, theo dõi checklist, quản lý chi phí, lưu tài liệu và xuất thông tin chuyến đi.
+> Đây là bản demo giao diện chạy hoàn toàn trên trình duyệt. Dữ liệu là dữ liệu mẫu trong JavaScript, chưa có backend, cơ sở dữ liệu hay xác thực thật.
 
-Phiên bản hiện tại là giao diện demo chạy trực tiếp trên trình duyệt. Dữ liệu được lưu tạm trong JavaScript, chưa kết nối backend hoặc cơ sở dữ liệu.
+## Chức năng
 
-## Các tính năng theo từng màn hình
+### Tài khoản
 
-### Đăng nhập
+- Đăng ký tài khoản demo bằng họ tên, email và mật khẩu.
+- Đăng nhập bằng email/mật khẩu hoặc lựa chọn đăng nhập Google mô phỏng.
+- Đăng xuất và chuyển lại màn hình đăng nhập.
 
-- Màn hình đăng nhập mô phỏng bằng email/mật khẩu hoặc Google.
-- Có thể dùng thông tin bất kỳ để truy cập bản demo.
+### Quản lý chuyến đi
 
-### Overview
+- Xem danh sách tất cả chuyến đi dưới dạng các workspace riêng.
+- Tạo chuyến đi với tên, điểm đến, thành viên, ngày khởi hành/kết thúc, trạng thái, ngân sách và ảnh bìa.
+- Chỉnh sửa thông tin workspace đang mở.
+- Chuyển nhanh giữa các chuyến đi từ danh sách hoặc thẻ chuyến đi.
+- Theo dõi trạng thái: Bản nháp, Đang lên kế hoạch, Đã chốt, Đang diễn ra và Đã hoàn tất.
 
-- Hiển thị thông tin tổng quan của chuyến đi đang chọn: điểm đến, ngày đi, số thành viên, ngân sách và chi phí đã dùng.
-- Hiển thị timeline các hoạt động sắp tới.
-- Hiển thị tiến độ checklist chuẩn bị.
-- Cho phép chỉnh sửa thông tin chuyến đi, gồm tên, địa điểm, ảnh, thành viên, ngày đi, ngân sách và trạng thái.
+### Tổng quan
 
-### Tất cả chuyến đi
+- Hiển thị điểm đến, thời gian, số thành viên, ngân sách và chi phí hiện tại.
+- Theo dõi tiến độ checklist và các hoạt động sắp tới trên timeline.
+- Hiển thị thông báo về các ý kiến đã duyệt nhưng chưa đưa vào lịch trình.
 
-- Xem danh sách các trip đã tạo.
-- Tạo workspace cho chuyến đi mới.
-- Chuyển sang workspace của từng chuyến đi.
+### Ý kiến thành viên
 
-### Opinions
+- Xem ý kiến/bình chọn mẫu từ thành viên.
+- Duyệt ý kiến.
+- Duyệt và đưa hoạt động được đề xuất vào lịch trình.
+- Tạo Google Form mô phỏng, xem phản hồi và quản lý biểu mẫu ngay trong giao diện demo.
 
-- Hiển thị ý kiến và bình chọn mẫu từ các thành viên.
-- Leader có thể duyệt ý kiến hoặc áp dụng hoạt động được bình chọn vào kế hoạch.
+### Lịch trình (Plan)
 
-### Plan
+- Xem hoạt động theo từng ngày của chuyến đi.
+- Thêm hoạt động với thời gian, tiêu đề và ghi chú.
+- Xem chi tiết, chỉnh sửa hoặc xóa hoạt động.
 
-- Hiển thị lịch trình theo ngày và khung giờ.
-- Thêm, sửa hoặc xóa hoạt động trong kế hoạch.
+### Checklist chuẩn bị
 
-### Checklist
+- Theo dõi danh sách việc cần chuẩn bị và trạng thái hoàn thành.
+- Gán người phụ trách và thêm ghi chú cho từng việc.
+- Thêm, sửa hoặc xóa công việc.
 
-- Theo dõi các công việc cần chuẩn bị.
-- Gán người phụ trách và đánh dấu công việc đã hoàn thành.
-- Thêm, sửa hoặc xóa checklist.
+### Chi phí và quyết toán
 
-### Expenses
+- Ghi nhận khoản chi, số tiền, người thanh toán và các thành viên cùng chia.
+- Xem tổng chi, ngân sách còn lại và danh sách chi phí.
+- Thêm, sửa hoặc xóa khoản chi.
+- Tự động tổng hợp phần chi phí được phân bổ, số đã chi và số tiền mỗi thành viên cần trả/nhận lại.
 
-- Theo dõi các khoản chi của chuyến đi.
-- Hiển thị tổng chi, người đã thanh toán và số tiền cần hoàn lại.
-- Thêm, sửa hoặc xóa khoản chi mẫu.
+### Tài liệu
 
-### Documents
+- Quản lý danh sách vé, booking, hóa đơn và tài liệu liên quan.
+- Thêm, chỉnh sửa hoặc xóa tài liệu.
+- Đính kèm ảnh minh họa từ máy tính trong phiên làm việc hiện tại.
 
-- Lưu danh sách vé, booking, hóa đơn và tài liệu liên quan.
-- Thêm, sửa hoặc xóa tài liệu mẫu.
+### Xuất báo cáo
 
-### Export
+- Chọn nội dung cần xuất: lịch trình, checklist, chi phí và quyết toán thành viên.
+- Xem trước bản báo cáo dạng PDF trong trình duyệt và dùng hộp thoại in để lưu PDF.
+- Tài liệu booking nhạy cảm không được chọn kèm theo mặc định.
 
-- Cung cấp các lựa chọn xuất PDF mô phỏng cho kế hoạch, checklist và báo cáo chi phí.
+## Cách chạy mockup
+
+Không cần cài đặt dependency. Mở trực tiếp file sau bằng trình duyệt:
+
+```text
+mockup/index.html
+```
+
+Hoặc dùng một local server tĩnh nếu trình duyệt hoặc môi trường phát triển của bạn yêu cầu.
+
+## Giới hạn của bản demo
+
+- Dữ liệu không được lưu bền vững khi tải lại trang.
+- Đăng nhập, Google Form và xuất PDF đều là mô phỏng phía client.
+- Ảnh bìa/tài liệu tải lên được dùng bằng URL tạm thời của trình duyệt.

@@ -1116,6 +1116,8 @@
       .modal-card {
         position: relative;
         width: min(610px, 100%);
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
         background: #fffdf9;
         border-radius: 24px 24px 24px 7px;
         padding: 26px;
@@ -1290,6 +1292,24 @@
         width: 16px;
         height: 16px;
         accent-color: var(--forest);
+      }
+      .member-editor {
+        display: grid;
+        gap: 8px;
+        margin: 10px 0;
+      }
+      .member-editor-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        align-items: center;
+      }
+      .member-editor-row input {
+        width: 100%;
+        padding: 10px 11px;
+        border: 1px solid #d9e2de;
+        border-radius: 9px;
+        font: inherit;
       }
       .modal-actions {
         display: flex;
@@ -1945,16 +1965,10 @@
             ><input id="new-trip-cover" required type="file" accept="image/*" />
           </div>
           <div class="full">
-            <label for="new-trip-member-names"
-              >Tên member
-              <span style="font-weight: 400; color: #72808b"
-                >(ngăn cách bằng dấu phẩy)</span
-              ></label
-            ><input
-              id="new-trip-member-names"
-              required
-              placeholder="Minh Long, Thu An, Khánh Vy"
-            />
+            <label>Thành viên</label>
+            <p class="hint">Mỗi thành viên có định danh riêng; đổi tên không làm mất checklist hay chi phí đã gán.</p>
+            <div id="trip-member-editor" class="member-editor"></div>
+            <button class="small-btn" type="button" onclick="addTripMember()">+ Thêm member</button>
           </div>
           <div>
             <label for="new-trip-start">Ngày khởi hành</label
@@ -2312,6 +2326,30 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
       </section>
     </div>
     <script>
+      const MemberUtils = {
+        createMembers(names) {
+          return names.map((name, index) => ({
+            id: `member-${index + 1}`,
+            name: String(name).trim(),
+            active: true,
+          }));
+        },
+        reconcileMembers(existing, drafts) {
+          const selectedIds = new Set();
+          const active = drafts.map((draft, index) => {
+            const id = draft.id || `member-${existing.length + index + 1}`;
+            selectedIds.add(id);
+            return { id, name: String(draft.name).trim(), active: true };
+          });
+          const removed = existing
+            .filter((member) => !selectedIds.has(member.id) && member.active)
+            .map((member) => ({ ...member, active: false }));
+          const inactive = existing.filter(
+            (member) => !selectedIds.has(member.id) && !member.active,
+          );
+          return { active, removed, all: [...active, ...inactive, ...removed] };
+        },
+      };
       let opinions = [
         [
           "Thu An",
@@ -2507,6 +2545,36 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         documents: false,
       };
       const activeMembers = () => getActiveWorkspace().members || defaultMembers;
+      let tripDraftMembers = [];
+      function memberRecords() {
+        const workspace = getActiveWorkspace();
+        if (!workspace.memberRecords) {
+          workspace.memberRecords = MemberUtils.createMembers(workspace.members || defaultMembers);
+        }
+        return workspace.memberRecords;
+      }
+      function renderTripMemberEditor() {
+        document.querySelector("#trip-member-editor").innerHTML = tripDraftMembers
+          .map((member, index) =>
+            `<div class="member-editor-row"><input required aria-label="Tên member ${index + 1}" value="${safe(member.name)}" oninput="tripDraftMembers[${index}].name=this.value"><button class="small-btn delete" type="button" onclick="removeTripMember(${index})">Xóa</button></div>`,
+          )
+          .join("");
+      }
+      function addTripMember() {
+        tripDraftMembers.push({ id: `member-new-${Date.now()}-${tripDraftMembers.length}`, name: "" });
+        renderTripMemberEditor();
+        document.querySelector("#trip-member-editor .member-editor-row:last-child input").focus();
+      }
+      function removeTripMember(index) {
+        const member = tripDraftMembers[index];
+        const impacts = editingTripIndex === null ? [] : [
+          ...tasks.filter((task) => task[1] === member.name).map((task) => `Checklist: ${task[0]}`),
+          ...expenses.filter((expense) => expense[2] === member.name || (expense[5] || []).includes(member.name)).map((expense) => `Chi phí: ${expense[0]}`),
+        ];
+        if (impacts.length && !confirm(`${member.name} đang có dữ liệu liên quan:\n\n${impacts.join("\n")}\n\nXóa khỏi danh sách member? Lịch sử checklist và chi phí vẫn được giữ.`)) return;
+        tripDraftMembers.splice(index, 1);
+        renderTripMemberEditor();
+      }
       const initials = (name) =>
         name
           .split(" ")
@@ -3459,7 +3527,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         if (editing) {
           set("#new-trip-name", trip[0]);
           set("#new-trip-destination", trip[1]);
-          set("#new-trip-member-names", activeMembers().join(", "));
+          tripDraftMembers = memberRecords().filter((member) => member.active).map((member) => ({ id: member.id, name: member.name }));
           set("#new-trip-start", trip[8] || "");
           set("#new-trip-end", trip[9] || "");
           set("#new-trip-status", trip[4]);
@@ -3468,7 +3536,9 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           document.querySelector("#trip-form").reset();
           set("#new-trip-status", "Bản nháp");
           set("#new-trip-budget", "12000000");
+          tripDraftMembers = [{ id: "member-new-1", name: "" }];
         }
+        renderTripMemberEditor();
         document.querySelector("#trip-modal").classList.add("show");
         document.querySelector("#new-trip-name").focus();
       }
@@ -3486,10 +3556,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           end = value("#new-trip-end"),
           status = value("#new-trip-status"),
           budget = value("#new-trip-budget"),
-          memberNames = value("#new-trip-member-names")
-            .split(",")
-            .map((x) => x.trim())
-            .filter(Boolean),
+          memberNames = tripDraftMembers.map((member) => member.name.trim()).filter(Boolean),
           localCover = file ? URL.createObjectURL(file) : null,
           tripData = [
             name,
@@ -3504,12 +3571,28 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
             end,
             editingTripIndex !== null ? trips[editingTripIndex][10] : `trip-${Date.now()}`,
           ];
+        if (!memberNames.length) {
+          showToast("Hãy thêm ít nhất một member cho chuyến đi.");
+          return;
+        }
         if (editingTripIndex !== null) {
           const previous = trips[editingTripIndex];
+          const before = memberRecords();
+          const reconciled = MemberUtils.reconcileMembers(before, tripDraftMembers.filter((member) => member.name.trim()));
+          before.forEach((member) => {
+            const updated = reconciled.active.find((next) => next.id === member.id);
+            if (!updated || updated.name === member.name) return;
+            tasks.forEach((task) => { if (task[1] === member.name) task[1] = updated.name; });
+            expenses.forEach((expense) => {
+              if (expense[2] === member.name) expense[2] = updated.name;
+              expense[5] = (expense[5] || []).map((name) => name === member.name ? updated.name : name);
+            });
+          });
           tripData[7] = localCover || previous[7];
           trips[editingTripIndex] = tripData;
           activeTrip = editingTripIndex;
           getActiveWorkspace().members = memberNames;
+          getActiveWorkspace().memberRecords = reconciled.all;
           bindActiveWorkspace();
           closeTripModal();
           event.target.reset();
