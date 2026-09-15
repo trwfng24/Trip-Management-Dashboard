@@ -2050,48 +2050,29 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
       </form>
     </div>
     <div class="modal-backdrop" id="opinion-modal">
-      <form
-        class="modal-card"
-        id="opinion-editor"
-        onsubmit="saveOpinion(event)"
-      >
+      <div class="modal-card" id="opinion-editor">
         <button type="button" class="modal-close" aria-label="Đóng popup" onclick="closeOpinionModal()">×</button>
         <div class="eyebrow">Opinion Inbox</div>
         <h2>Chi tiết ý kiến</h2>
-        <p>Xem, chỉnh sửa hoặc xóa phản hồi trước khi áp dụng vào kế hoạch.</p>
+        <p>Xem nội dung và trạng thái phản hồi từ member.</p>
         <div class="form-grid">
           <div>
             <label for="opinion-member">Member</label
-            ><input id="opinion-member" required />
-          </div>
-          <div>
-            <label for="opinion-category">Nhóm ý kiến</label
-            ><select id="opinion-category" required>
-              <option>Nhu cầu ăn uống</option>
-              <option>Hoạt động</option>
-              <option>Thời gian</option>
-              <option>Ngân sách</option>
-              <option>Khác</option>
-            </select>
+            ><input id="opinion-member" readonly />
           </div>
           <div class="full">
             <label for="opinion-content">Nội dung</label
-            ><textarea id="opinion-content" required></textarea>
+            ><textarea id="opinion-content" readonly></textarea>
           </div>
           <div class="full">
             <label for="opinion-status">Trạng thái</label
-            ><select id="opinion-status" required>
+            ><select id="opinion-status" disabled>
               <option>Mới nhận</option>
-              <option>Đang xem xét</option>
-              <option>Đã áp dụng</option>
+              <option>Đã duyệt</option>
             </select>
           </div>
         </div>
-        <div class="modal-actions">
-          <button type="button" class="btn" style="color:#b03a24" onclick="deleteOpinionFromModal()">Xóa</button
-          ><button type="submit" class="btn primary">Lưu thay đổi</button>
-        </div>
-      </form>
+      </div>
     </div>
     <div class="modal-backdrop" id="form-manager-modal">
       <div class="modal-card">
@@ -2142,18 +2123,22 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           Chọn ngày và thêm chi tiết để cập nhật lịch trình.
         </p>
         <div class="form-grid">
-          <div>
+          <div class="full">
             <label for="plan-activity-day">Ngày</label
             ><select id="plan-activity-day" required></select>
           </div>
           <div>
-            <label for="plan-activity-time">Thời gian</label
+            <label for="plan-activity-start-time">Thời gian bắt đầu</label
             ><input
-              id="plan-activity-time"
+              id="plan-activity-start-time"
               required
               type="time"
               value="10:00"
             />
+          </div>
+          <div>
+            <label for="plan-activity-end-time">Thời gian kết thúc</label
+            ><input id="plan-activity-end-time" required type="time" value="11:00" />
           </div>
           <div class="full">
             <label for="plan-activity-title">Hoạt động</label
@@ -2354,31 +2339,22 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         [
           "Thu An",
           "Thêm món chay cho bữa tối ngày 1",
-          "Nhu cầu ăn uống",
           "Mới nhận",
         ],
         [
           "Minh Long",
           "Mình vote Bà Nà Hills vào sáng ngày 2.",
-          "Hoạt động",
           "Mới nhận",
-          [
-            "09:00",
-            "Bà Nà Hills",
-            "Đề xuất từ Minh Long · Được duyệt từ Opinion Inbox",
-          ],
         ],
         [
           "Linh Pham",
           "Có thể khởi hành sớm hơn lúc 06:30 không?",
-          "Thời gian",
-          "Đang xem xét",
+          "Mới nhận",
         ],
         [
           "Khanh Vy",
           "Ngân sách 2 triệu/người là ổn.",
-          "Ngân sách",
-          "Đã áp dụng",
+          "Đã duyệt",
         ],
       ];
       let notifications = [];
@@ -2511,7 +2487,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         "da-nang": { members: trips[0][6], opinions, notifications, expenses, documents, tasks, plansByDay, googleForm },
         "ha-noi": {
           members: ["Huy Nguyen", "Ngọc Anh", "Tuấn Minh", "Mai Linh", "Quang Huy"],
-          opinions: [["Ngọc Anh", "Ưu tiên tour ẩm thực khu phố cổ.", "Hoạt động", "Mới nhận"]],
+          opinions: [["Ngọc Anh", "Ưu tiên tour ẩm thực khu phố cổ.", "Mới nhận"]],
           notifications: [],
           expenses: [["Ăn trưa bún chả", 450000, "Ngọc Anh", "2026-12-04", "Chia 5 người", ["Huy Nguyen", "Ngọc Anh", "Tuấn Minh", "Mai Linh", "Quang Huy"]], ["Vé food tour", 1000000, "Huy Nguyen", "2026-12-04", "Chia 5 người", ["Huy Nguyen", "Ngọc Anh", "Tuấn Minh", "Mai Linh", "Quang Huy"]]],
           documents: [["▣", "Lịch food tour.pdf", "Lịch ăn uống · 04–06 Dec 2026"]],
@@ -2623,6 +2599,8 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           .map((day) => `<button class="${day.value === activePlanDay ? "active" : ""}" onclick="selectPlanDay(${day.value})">${safe(day.label)}</button>`)
           .join("");
       }
+      const formatActivityTime = (activity) =>
+        activity[3] ? `${activity[0]} – ${activity[3]}` : `${activity[0]} – Chưa xác định`;
       const getExpenseSplit = (expense) => {
         const members = activeMembers();
         const allocation = Object.fromEntries(members.map((member) => [member, 0]));
@@ -2812,7 +2790,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         document.querySelector("#opinion-list").innerHTML = opinions
           .map(
             (x, i) =>
-              `<div class="opinion"><span class="avatar">${initials(x[0])}</span><div class="opinion-main"><h3>${safe(x[1])}</h3><p>${safe(x[0])} · ${safe(x[2])}</p></div><span class="tag ${x[3] === "Mới nhận" ? "pending" : ""}">${x[3]}</span>${x[3] !== "Đã áp dụng" ? `<button class="text-link" onclick="approveOpinion(${i})">Duyệt</button>` : ""}${actions("opinion", i)}</div>`,
+              `<div class="opinion"><span class="avatar">${initials(x[0])}</span><div class="opinion-main"><h3>${safe(x[1])}</h3><p>${safe(x[0])}</p></div><span class="tag ${x[2] === "Mới nhận" ? "pending" : ""}">${x[2]}</span>${x[2] !== "Đã duyệt" ? `<button class="text-link" onclick="approveOpinion(${i})">Duyệt</button>` : ""}${actions("opinion", i)}</div>`,
           )
           .join("");
         document.querySelector("#expense-list").innerHTML = expenses
@@ -2916,7 +2894,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           .sort((a, b) => a[0].localeCompare(b[0]))
           .map(
             (x, i) =>
-              `<div class="plan-card" style="cursor:pointer" onclick="openPlanDetail(${i})"><span class="time-chip">${safe(x[0])}</span><div><b>${safe(x[1])}</b><p>${safe(x[2])}</p></div></div>`,
+              `<div class="plan-card" style="cursor:pointer" onclick="openPlanDetail(${i})"><span class="time-chip">${safe(formatActivityTime(x))}</span><div><b>${safe(x[1])}</b><p>${safe(x[2])}</p></div></div>`,
           )
           .join("");
         document.querySelector("#overview-timeline").innerHTML = plansByDay
@@ -2924,7 +2902,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           .slice(0, 3)
           .map(
             ({ activity, dayIndex }) =>
-              `<div class="event"><span class="event-dot"></span><time>Ngày ${dayIndex + 1}<br />${safe(activity[0])}</time><div><h3>${safe(activity[1])}</h3><p>${safe(activity[2])}</p></div></div>`,
+              `<div class="event"><span class="event-dot"></span><time>Ngày ${dayIndex + 1}<br />${safe(formatActivityTime(activity))}</time><div><h3>${safe(activity[1])}</h3><p>${safe(activity[2])}</p></div></div>`,
           )
           .join("") || '<p class="hint">Chưa có hoạt động nào trong lịch trình.</p>';
       }
@@ -2936,19 +2914,10 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
       }
       function approveOpinion(i) {
         const opinion = opinions[i];
-        if (opinion[3] === "Đã áp dụng") return;
-        opinion[3] = "Đã áp dụng";
-        notifications.unshift([opinion[0], opinion[1], opinion[2]]);
+        if (opinion[2] === "Đã duyệt") return;
+        opinion[2] = "Đã duyệt";
         render();
-        showToast("Đã duyệt ý kiến và tạo thông báo cần xử lý.");
-      }
-      function approveAndAddToPlan(i) {
-        const opinion = opinions[i];
-        if (opinion[3] === "Đã áp dụng" || !opinion[4]) return;
-        plans.push(opinion[4]);
-        opinion[3] = "Đã áp dụng";
-        render();
-        showToast("Đã duyệt và thêm hoạt động vào Plan.");
+        showToast("Đã duyệt ý kiến.");
       }
       function dismissNotification(i) {
         notifications.splice(i, 1);
@@ -3036,35 +3005,13 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         editingOpinionIndex = i;
         set("#opinion-member", item[0]);
         set("#opinion-content", item[1]);
-        set("#opinion-category", item[2]);
-        set("#opinion-status", item[3]);
+        set("#opinion-status", item[2]);
         document.querySelector("#opinion-modal").classList.add("show");
         document.querySelector("#opinion-content").focus();
       }
       function closeOpinionModal() {
         editingOpinionIndex = null;
         document.querySelector("#opinion-modal").classList.remove("show");
-      }
-      function saveOpinion(event) {
-        event.preventDefault();
-        if (editingOpinionIndex === null) return;
-        const value = (id) => document.querySelector(id).value.trim();
-        opinions[editingOpinionIndex] = [
-          value("#opinion-member"),
-          value("#opinion-content"),
-          value("#opinion-category"),
-          value("#opinion-status"),
-        ];
-        closeOpinionModal();
-        render();
-        showToast("Đã cập nhật ý kiến trong Inbox.");
-      }
-      function deleteOpinionFromModal() {
-        if (editingOpinionIndex === null || !confirm("Xóa ý kiến này?")) return;
-        opinions.splice(editingOpinionIndex, 1);
-        closeOpinionModal();
-        render();
-        showToast("Đã xóa ý kiến khỏi Inbox.");
       }
       function applyVote() {
         showToast("Đã thêm Bà Nà Hills vào Plan ngày 2.");
@@ -3259,7 +3206,8 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           .map((day) => `<option value="${day.value}">${safe(day.label)}</option>`)
           .join("");
         document.querySelector("#plan-activity-day").value = activePlanDay;
-        document.querySelector("#plan-activity-time").value = "10:00";
+        document.querySelector("#plan-activity-start-time").value = "10:00";
+        document.querySelector("#plan-activity-end-time").value = "11:00";
         document.querySelector("#plan-modal").classList.add("show");
         document.querySelector("#plan-activity-title").focus();
       }
@@ -3281,7 +3229,8 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           .map((day) => `<option value="${day.value}">${safe(day.label)}</option>`)
           .join("");
         set("#plan-activity-day", activePlanDay);
-        set("#plan-activity-time", activity[0]);
+        set("#plan-activity-start-time", activity[0]);
+        set("#plan-activity-end-time", activity[3] || "");
         set("#plan-activity-title", activity[1]);
         set("#plan-activity-note", activity[2]);
         document.querySelector("#plan-modal").classList.add("show");
@@ -3302,11 +3251,18 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         event.preventDefault();
         const value = (id) => document.querySelector(id).value.trim(),
           day = Number(value("#plan-activity-day")),
+          startTime = value("#plan-activity-start-time"),
+          endTime = value("#plan-activity-end-time"),
           activity = [
-            value("#plan-activity-time"),
+            startTime,
             value("#plan-activity-title"),
             value("#plan-activity-note"),
+            endTime,
           ];
+        if (endTime <= startTime) {
+          showToast("Thời gian kết thúc phải sau thời gian bắt đầu.");
+          return;
+        }
         if (editingPlanIndex !== null) {
           plansByDay[day][editingPlanIndex] = activity;
           closePlanModal();
@@ -3631,13 +3587,11 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
       function renderOpinions() {
         document.querySelector("#opinion-list").innerHTML = opinions
           .map((x, i) => {
-            const applied = x[3] === "Đã áp dụng",
-              primary = applied
-                ? '<span class="small-btn applied">Đã áp dụng</span>'
-                : x[4]
-                  ? `<button class="small-btn apply" onclick="event.stopPropagation();approveAndAddToPlan(${i})">Duyệt & thêm Plan</button>`
-                  : `<button class="small-btn apply" onclick="event.stopPropagation();approveOpinion(${i})">Duyệt</button>`;
-            return `<div class="opinion" style="cursor:pointer" onclick="openOpinionDetail(${i})"><span class="avatar">${initials(x[0])}</span><div class="opinion-main"><h3>${safe(x[1])}</h3><p>${safe(x[0])} · ${safe(x[2])}</p></div><span class="opinion-actions">${primary}</span></div>`;
+            const approved = x[2] === "Đã duyệt",
+              primary = approved
+                ? '<span class="small-btn applied">Đã duyệt</span>'
+                : `<button class="small-btn apply" onclick="event.stopPropagation();approveOpinion(${i})">Duyệt</button>`;
+            return `<div class="opinion" style="cursor:pointer" onclick="openOpinionDetail(${i})"><span class="avatar">${initials(x[0])}</span><div class="opinion-main"><h3>${safe(x[1])}</h3><p>${safe(x[0])}</p></div><span class="opinion-actions">${primary}</span></div>`;
           })
           .join("");
       }
@@ -3647,7 +3601,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           ? notifications
               .map(
                 (x, i) =>
-                  `<div class="notification-row"><span class="avatar">${initials(x[0])}</span><div class="notification-copy"><h3>${safe(x[1])}</h3><p>${safe(x[0])} · ${safe(x[2])} · Đã duyệt, chưa thêm vào Plan</p></div><button class="small-btn" onclick="dismissNotification(${i})">Đánh dấu đã xử lý</button></div>`,
+                  `<div class="notification-row"><span class="avatar">${initials(x[0])}</span><div class="notification-copy"><h3>${safe(x[1])}</h3><p>${safe(x[0])} · ${safe(x[2])}</p></div><button class="small-btn" onclick="dismissNotification(${i})">Đánh dấu đã xử lý</button></div>`,
               )
               .join("")
           : '<p class="hint">Chưa có thông báo cần xử lý.</p>';
