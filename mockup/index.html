@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TripPilot — Quản lý chuyến đi</title>
+    <title>DiDiEms — Quản lý chuyến đi</title>
     <style>
       :root {
         --ink: #22384a;
@@ -840,6 +840,31 @@
         font-size: 29px;
         margin: 7px 0 18px;
       }
+      .expense-budget-progress {
+        margin: -5px 0 18px;
+      }
+      .expense-budget-progress-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+        color: #cde5e8;
+        font-size: 11px;
+      }
+      .expense-budget-progress-meta b {
+        color: var(--lime);
+      }
+      .expense-summary .progress {
+        background: rgba(255, 255, 255, 0.18);
+      }
+      .expense-summary .progress span {
+        background: var(--lime);
+      }
+      .expense-summary.over-budget .expense-budget-progress-meta b,
+      .expense-summary.over-budget .progress span {
+        color: #ffb098;
+        background: #ffb098;
+      }
       .owed {
         display: flex;
         justify-content: space-between;
@@ -853,6 +878,63 @@
       .owed span:last-child {
         color: var(--lime);
         font-weight: 800;
+      }
+      .settlement-panel {
+        margin-top: 20px;
+      }
+      .settlement-row {
+        display: grid;
+        grid-template-columns: minmax(150px, 1.35fr) repeat(3, minmax(110px, 1fr));
+        gap: 14px;
+        align-items: center;
+        padding: 13px 0;
+        border-bottom: 1px solid var(--line);
+        font-size: 13px;
+      }
+      .settlement-row:last-child {
+        border-bottom: 0;
+      }
+      .settlement-row.head {
+        padding-top: 0;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .settlement-member {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-weight: 800;
+      }
+      .settlement-value {
+        font-weight: 700;
+      }
+      .settlement-link {
+        width: max-content;
+        border: 0;
+        padding: 0;
+        background: none;
+        color: var(--forest);
+        font: inherit;
+        font-weight: 800;
+        text-align: left;
+        text-decoration: underline;
+        text-decoration-color: transparent;
+        text-underline-offset: 3px;
+      }
+      .settlement-link:hover {
+        text-decoration-color: currentColor;
+      }
+      .settlement-balance {
+        font-weight: 800;
+      }
+      .settlement-balance.owes {
+        color: #b03a24;
+      }
+      .settlement-balance.receives {
+        color: var(--forest);
       }
       .doc-icon {
         width: 38px;
@@ -918,6 +1000,58 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 16px;
+      }
+      .export-builder {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+        gap: 20px;
+      }
+      .export-option-list {
+        display: grid;
+        gap: 4px;
+      }
+      .export-option {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--line);
+        cursor: pointer;
+      }
+      .export-option:last-child {
+        border-bottom: 0;
+      }
+      .export-option input {
+        width: 17px;
+        height: 17px;
+        margin: 2px 0 0;
+        accent-color: var(--forest);
+      }
+      .export-option span {
+        flex: 1;
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .export-option small {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-weight: 500;
+      }
+      .export-preview-list {
+        display: grid;
+        gap: 8px;
+        margin: 15px 0 20px;
+      }
+      .export-preview-list span {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 9px 10px;
+        border-radius: 8px;
+        background: #f6fbf8;
+        color: #527068;
+        font-size: 12px;
       }
       .export-card {
         border: 1px solid var(--line);
@@ -987,6 +1121,106 @@
         padding: 26px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
       }
+      .pdf-sheet {
+        position: relative;
+        width: min(760px, 100%);
+        max-height: calc(100vh - 40px);
+        overflow: auto;
+        padding: clamp(26px, 5vw, 54px);
+        background: #fff;
+        color: #22384a;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+      .pdf-toolbar {
+        position: sticky;
+        top: -30px;
+        z-index: 1;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin: -30px -30px 22px;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.94);
+        border-bottom: 1px solid #edf0ed;
+      }
+      .pdf-toolbar .btn {
+        padding: 7px 10px;
+        font-size: 12px;
+      }
+      .pdf-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--forest);
+        font-size: 14px;
+        font-weight: 800;
+      }
+      .pdf-brand .brand-mark {
+        width: 23px;
+        height: 23px;
+        font-size: 13px;
+      }
+      .pdf-title {
+        margin: 28px 0 7px;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(30px, 5vw, 44px);
+        line-height: 1.04;
+        letter-spacing: -1.5px;
+      }
+      .pdf-subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .pdf-summary {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        margin: 27px 0;
+        border: 1px solid #e7ece8;
+        background: #e7ece8;
+      }
+      .pdf-summary div {
+        padding: 13px;
+        background: #f8fbf9;
+      }
+      .pdf-summary small,
+      .pdf-section small {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .pdf-section {
+        margin-top: 25px;
+      }
+      .pdf-section h2 {
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--forest);
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .pdf-item {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 9px 0;
+        border-bottom: 1px solid #edf0ed;
+        font-size: 12px;
+      }
+      .pdf-item p {
+        margin: 3px 0 0;
+        color: var(--muted);
+      }
+      .pdf-footer {
+        margin-top: 34px;
+        padding-top: 14px;
+        border-top: 1px solid #e7ece8;
+        color: var(--muted);
+        font-size: 11px;
+      }
       .modal-close {
         position: absolute;
         top: 14px;
@@ -1034,6 +1268,28 @@
       .form-grid textarea {
         min-height: 96px;
         resize: vertical;
+      }
+      .member-picker {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        padding: 11px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: #fff;
+      }
+      .member-picker label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin: 0;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .member-picker input {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--forest);
       }
       .modal-actions {
         display: flex;
@@ -1112,11 +1368,13 @@
         .hero {
           padding: 22px;
         }
-        .export-grid {
+        .export-grid,
+        .export-builder {
           grid-template-columns: 1fr;
         }
       }
       @media (max-width: 620px) {
+        /* Phone layout: preserve readable actions, forms, tables and PDF preview. */
         .topbar,
         .panel-head {
           align-items: flex-start;
@@ -1153,6 +1411,60 @@
         .notification-row .small-btn {
           margin-left: 38px;
         }
+        .member-picker {
+          grid-template-columns: 1fr;
+        }
+        .settlement-row {
+          grid-template-columns: 1fr 1fr;
+          gap: 8px 14px;
+        }
+        .settlement-row.head {
+          display: none;
+        }
+        .settlement-value:before,
+        .settlement-balance:before {
+          display: block;
+          margin-bottom: 2px;
+          color: var(--muted);
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+        .settlement-value.assigned:before { content: "Chi phí"; }
+        .settlement-value.paid:before { content: "Đã chi"; }
+        .settlement-balance:before { content: "Phải trả"; }
+        .pdf-summary {
+          grid-template-columns: 1fr;
+        }
+        .modal-backdrop {
+          align-items: end;
+          padding: 0;
+        }
+        .modal-card,
+        .pdf-sheet {
+          width: 100%;
+          max-height: min(90vh, 760px);
+          border-radius: 20px 20px 0 0;
+        }
+        .modal-card {
+          padding: 22px 18px;
+        }
+        .pdf-toolbar {
+          top: -22px;
+          margin: -22px -18px 18px;
+        }
+        .expense-row,
+        .pdf-item {
+          align-items: flex-start;
+        }
+        .amount {
+          white-space: nowrap;
+        }
+        .actions {
+          width: 100%;
+          justify-content: flex-end;
+        }
         h1,
         h2,
         h3,
@@ -1165,7 +1477,7 @@
   <body>
     <section class="login-screen" id="login-screen">
       <div class="login-art">
-        <div class="brand"><span class="brand-mark">✦</span> TripPilot</div>
+        <div class="brand"><span class="brand-mark">✦</span> DiDiEms</div>
         <div>
           <div class="eyebrow" style="color: #dff46a">
             Leader-only travel workspace
@@ -1176,12 +1488,12 @@
             nhóm — tại một nơi.
           </p>
         </div>
-        <small>© 2026 TripPilot</small>
+        <small>© 2026 DiDiEms</small>
       </div>
       <div class="login-card-wrap">
         <div class="login-card">
           <div class="brand" style="color: #176b50">
-            <span class="brand-mark">✦</span> TripPilot
+            <span class="brand-mark">✦</span> DiDiEms
           </div>
           <h2>Chào mừng trở lại</h2>
           <p>Đăng nhập để tiếp tục quản lý các chuyến đi của bạn.</p>
@@ -1190,7 +1502,7 @@
             id="login-email"
             type="email"
             placeholder="leader@example.com"
-            value="huy@trippilot.vn"
+            value="huy@didiems.vn"
           /><label for="login-password">Mật khẩu</label
           ><input
             id="login-password"
@@ -1217,7 +1529,7 @@
     </section>
     <section class="login-screen" id="register-screen" style="display: none">
       <div class="login-art">
-        <div class="brand"><span class="brand-mark">✦</span> TripPilot</div>
+        <div class="brand"><span class="brand-mark">✦</span> DiDiEms</div>
         <div>
           <div class="eyebrow" style="color: #dff46a">
             Create your leader workspace
@@ -1228,12 +1540,12 @@
             một nơi.
           </p>
         </div>
-        <small>© 2026 TripPilot</small>
+        <small>© 2026 DiDiEms</small>
       </div>
       <div class="login-card-wrap">
         <form class="login-card" onsubmit="register(event)">
           <div class="brand" style="color: #176b50">
-            <span class="brand-mark">✦</span> TripPilot
+            <span class="brand-mark">✦</span> DiDiEms
           </div>
           <h2>Tạo tài khoản</h2>
           <p>Thiết lập workspace quản lý chuyến đi của bạn.</p>
@@ -1262,7 +1574,7 @@
     </section>
     <div class="app hidden" id="app-shell">
       <aside class="sidebar" id="sidebar">
-        <div class="brand"><span class="brand-mark">✦</span> TripPilot</div>
+        <div class="brand"><span class="brand-mark">✦</span> DiDiEms</div>
         <button class="trip-switcher" id="trip-cover" data-view="trips">
           <small>Trip collection</small
           ><strong id="current-trip">Đà Nẵng cuối tuần</strong
@@ -1308,10 +1620,11 @@
             >
           </div>
         </div>
+        <!-- Trip collection: entry point after authentication. -->
         <section class="view" id="trips">
           <div class="panel-head">
             <div>
-              <div class="eyebrow">TripPilot</div>
+              <div class="eyebrow">DiDiEms</div>
               <h1 class="section-title">Tất cả chuyến đi</h1>
               <p class="hint">Tạo và mở workspace cho từng chuyến.</p>
             </div>
@@ -1321,6 +1634,7 @@
           </div>
           <div class="trip-list" id="trip-list"></div>
         </section>
+        <!-- Overview: derived summary for the selected trip workspace. -->
         <section class="view active" id="overview">
           <div class="hero" id="trip-hero">
             <div>
@@ -1366,7 +1680,7 @@
                 </div>
                 <button class="text-link" data-view="plan">Xem plan →</button>
               </div>
-              <div class="timeline">
+              <div class="timeline" id="overview-timeline">
                 <div class="event">
                   <span class="event-dot"></span><time>19 Oct<br />06:30</time>
                   <div>
@@ -1416,6 +1730,7 @@
             </div>
           </div>
         </section>
+        <!-- Opinions: member feedback and Google Form inbox. -->
         <section class="view" id="opinions">
           <div class="panel-head">
             <div>
@@ -1467,6 +1782,7 @@
             </aside>
           </div>
         </section>
+        <!-- Plan: itinerary grouped by the selected trip's calendar days. -->
         <section class="view" id="plan">
           <div class="panel-head">
             <div>
@@ -1480,17 +1796,12 @@
               ＋ Thêm hoạt động
             </button>
           </div>
-          <div class="tabs" id="plan-tabs">
-            <button class="active" onclick="selectPlanDay(0)">
-              Ngày 1 · 19 Oct</button
-            ><button onclick="selectPlanDay(1)">Ngày 2 · 20 Oct</button
-            ><button onclick="selectPlanDay(2)">Ngày 3 · 21 Oct</button
-            ><button onclick="selectPlanDay(3)">Ngày 4 · 22 Oct</button>
-          </div>
+          <div class="tabs" id="plan-tabs"></div>
           <div class="panel">
             <div class="plan-day"><div id="plan-list"></div></div>
           </div>
         </section>
+        <!-- Checklist: preparation tasks scoped to the active trip. -->
         <section class="view" id="checklist">
           <div class="panel-head">
             <div>
@@ -1505,6 +1816,7 @@
           <div class="progress"><span id="checklist-task-progress"></span></div>
           <div class="panel" id="checklist-list"></div>
         </section>
+        <!-- Expenses: shared costs, settlement and budget progress. -->
         <section class="view" id="expenses">
           <div class="panel-head">
             <div>
@@ -1529,21 +1841,33 @@
             <aside class="expense-summary">
               <small>TỔNG ĐÃ CHI</small
               ><strong id="total-expense">7.850.000₫</strong>
-              <div class="owed">
-                <span>Huy đã trả</span><span>3.850.000₫</span>
+              <div class="expense-budget-progress">
+                <div class="expense-budget-progress-meta">
+                  <b id="expense-budget-progress-label">Đã dùng 49% ngân sách dự kiến</b>
+                  <span id="expense-budget-total">7.850.000₫ / 16.000.000₫</span>
+                </div>
+                <div class="progress"><span id="expense-budget-progress"></span></div>
               </div>
+              <div id="expense-payer-summary"></div>
               <div class="owed">
-                <span>Minh Long cần trả</span><span>+ 325.000₫</span>
-              </div>
-              <div class="owed">
-                <span>Thu An cần trả</span><span>+ 240.000₫</span>
-              </div>
-              <div class="owed">
-                <span>Ngân sách còn lại</span><span>8.150.000₫</span>
+                <span>Ngân sách còn lại</span><span id="remaining-budget">8.150.000₫</span>
               </div>
             </aside>
           </div>
+          <div class="panel settlement-panel">
+            <div class="panel-head">
+              <div>
+                <h2>Quyết toán theo member</h2>
+                <p class="hint">Tính từ các khoản đã chi và member được chọn để chia tiền.</p>
+              </div>
+            </div>
+            <div class="settlement-row head">
+              <span>Member</span><span>Chi phí</span><span>Đã chi</span><span>Phải trả</span>
+            </div>
+            <div id="settlement-list"></div>
+          </div>
         </section>
+        <!-- Documents: trip-specific booking and reference files. -->
         <section class="view" id="documents">
           <div class="panel-head">
             <div>
@@ -1560,32 +1884,29 @@
           </div>
           <div class="panel" id="document-list"></div>
         </section>
+        <!-- Export: configurable Trip Brief and PDF preview. -->
         <section class="view" id="export">
           <div class="eyebrow">Shareable trip brief</div>
-          <h1 class="section-title">Export PDF</h1>
-          <p class="hint">
-            Chọn nội dung muốn gửi. Tài liệu booking nhạy cảm không được kèm
-            theo mặc định.
-          </p>
-          <div class="export-grid">
-            <div class="export-card">
-              <div class="doc-icon">🗺</div>
-              <h2>Trip plan</h2>
-              <p>Timeline theo ngày, địa điểm, phương tiện và ghi chú.</p>
-              <button class="btn primary export-button">Tạo PDF</button>
+          <h1 class="section-title">Tạo Trip Brief</h1>
+          <p class="hint">Chọn nội dung muốn xuất. Tài liệu booking nhạy cảm không được kèm theo mặc định.</p>
+          <div class="export-builder">
+            <div class="panel">
+              <h2>Nội dung gửi đi</h2>
+              <p class="hint">Chọn những phần cần xuất trong Trip Brief.</p>
+              <div class="export-option-list">
+                <label class="export-option"><input id="export-plan" type="checkbox" checked onchange="toggleExportOption('plan', this.checked)" /><span>Trip plan<small>Lịch trình, địa điểm và hoạt động theo ngày.</small></span></label>
+                <label class="export-option"><input id="export-checklist" type="checkbox" checked onchange="toggleExportOption('checklist', this.checked)" /><span>Checklist<small>Tiến độ chuẩn bị và người phụ trách.</small></span></label>
+                <label class="export-option"><input id="export-expenses" type="checkbox" checked onchange="toggleExportOption('expenses', this.checked)" /><span>Tổng hợp chi phí<small>Tổng đã chi và ngân sách dự kiến.</small></span></label>
+                <label class="export-option"><input id="export-settlement" type="checkbox" checked onchange="toggleExportOption('settlement', this.checked)" /><span>Quyết toán member<small>Chi phí, đã chi và số tiền cần trả/nhận.</small></span></label>
+                <label class="export-option"><input id="export-documents" type="checkbox" onchange="toggleExportOption('documents', this.checked)" /><span>Documents<small>Booking và tài liệu nhạy cảm — chỉ nên gửi leader.</small></span></label>
+              </div>
             </div>
-            <div class="export-card">
-              <div class="doc-icon">✓</div>
-              <h2>Checklist</h2>
-              <p>Danh sách công việc và người phụ trách trước khi khởi hành.</p>
-              <button class="btn primary export-button">Tạo PDF</button>
-            </div>
-            <div class="export-card">
-              <div class="doc-icon">₫</div>
-              <h2>Expense report</h2>
-              <p>Tổng hợp khoản chi, chia tiền và công nợ mỗi người.</p>
-              <button class="btn primary export-button">Tạo PDF</button>
-            </div>
+            <aside class="panel">
+              <div class="eyebrow">Preview</div>
+              <h2>Bản tóm tắt sẽ gửi</h2>
+              <div class="export-preview-list" id="export-preview"></div>
+              <button class="btn primary" style="width:100%" onclick="createTripBrief()">⇩ Tạo Trip Brief PDF</button>
+            </aside>
           </div>
         </section>
       </main>
@@ -1809,12 +2130,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         <div class="form-grid">
           <div>
             <label for="plan-activity-day">Ngày</label
-            ><select id="plan-activity-day" required>
-              <option value="0">Ngày 1 · 19 Oct</option>
-              <option value="1">Ngày 2 · 20 Oct</option>
-              <option value="2">Ngày 3 · 21 Oct</option>
-              <option value="3">Ngày 4 · 22 Oct</option>
-            </select>
+            ><select id="plan-activity-day" required></select>
           </div>
           <div>
             <label for="plan-activity-time">Thời gian</label
@@ -1939,8 +2255,64 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         </div>
       </form>
     </div>
+    <div class="modal-backdrop" id="expense-modal">
+      <form class="modal-card" id="expense-editor" onsubmit="submitExpense(event)">
+        <button type="button" class="modal-close" aria-label="Đóng popup" onclick="closeExpenseModal()">×</button>
+        <div class="eyebrow">Budget & settlement</div>
+        <h2 id="expense-modal-title">Thêm khoản chi</h2>
+        <p>Ghi nhận khoản chi, người thanh toán và ghi chú liên quan cho chuyến đi.</p>
+        <div class="form-grid">
+          <div class="full">
+            <label for="expense-name">Tên khoản chi</label>
+            <input id="expense-name" required placeholder="Ví dụ: Vé máy bay khứ hồi" />
+          </div>
+          <div>
+            <label for="expense-amount">Số tiền (VNĐ)</label>
+            <input id="expense-amount" required type="number" min="0" step="1000" placeholder="1000000" />
+          </div>
+          <div>
+            <label for="expense-payer">Người thanh toán</label>
+            <select id="expense-payer" required></select>
+          </div>
+          <div class="full">
+            <label for="expense-date">Ngày chi</label>
+            <input id="expense-date" required type="date" />
+          </div>
+          <div class="full">
+            <label>Chia cho</label>
+            <div class="member-picker" id="expense-split-members"></div>
+          </div>
+          <div class="full">
+            <label for="expense-note">Ghi chú</label>
+            <textarea id="expense-note" placeholder="Ví dụ: Chia đều cho 8 người"></textarea>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" id="expense-delete" style="display:none;color:#b03a24" onclick="deleteExpenseFromModal()">Xóa</button>
+          <button type="submit" class="btn primary">Lưu khoản chi</button>
+        </div>
+      </form>
+    </div>
+    <div class="modal-backdrop" id="settlement-detail-modal">
+      <section class="modal-card" aria-labelledby="settlement-detail-title">
+        <button type="button" class="modal-close" aria-label="Đóng popup" onclick="closeSettlementDetails()">×</button>
+        <div class="eyebrow">Expense details</div>
+        <h2 id="settlement-detail-title">Chi tiết chi phí</h2>
+        <p id="settlement-detail-description">Các khoản chi liên quan đến member này.</p>
+        <div id="settlement-detail-list"></div>
+      </section>
+    </div>
+    <div class="modal-backdrop" id="export-pdf-modal">
+      <section class="pdf-sheet" aria-label="Xem trước Trip Brief PDF">
+        <div class="pdf-toolbar">
+          <button type="button" class="btn" onclick="closeExportPdfPreview()">Đóng</button>
+          <button type="button" class="btn primary" onclick="downloadExportPdf()">⇩ Tải PDF</button>
+        </div>
+        <div id="export-pdf-preview"></div>
+      </section>
+    </div>
     <script>
-      const opinions = [
+      let opinions = [
         [
           "Thu An",
           "Thêm món chay cho bữa tối ngày 1",
@@ -1971,21 +2343,13 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           "Đã áp dụng",
         ],
       ];
-      const notifications = [];
-      const expenses = [
-        ["Vé máy bay", "19 Oct · Huy thanh toán · chia 8 người", "3.600.000₫"],
-        [
-          "Khách sạn Meliá Vinpearl",
-          "19–22 Oct · Minh Long thanh toán · chia 8 người",
-          "3.250.000₫",
-        ],
-        [
-          "Đặt cọc xe 16 chỗ",
-          "19 Oct · Huy thanh toán · chia 8 người",
-          "1.000.000₫",
-        ],
+      let notifications = [];
+      let expenses = [
+        ["Vé máy bay", 3600000, "Huy Nguyen", "2026-10-19", "", ["Huy Nguyen", "Minh Long", "Thu An", "Khanh Vy"]],
+        ["Khách sạn Meliá Vinpearl", 3250000, "Minh Long", "2026-10-19", "", ["Huy Nguyen", "Minh Long", "Thu An", "Khanh Vy"]],
+        ["Đặt cọc xe 16 chỗ", 1000000, "Huy Nguyen", "2026-10-19", "", ["Huy Nguyen", "Minh Long", "Thu An", "Khanh Vy"]],
       ];
-      const documents = [
+      let documents = [
         [
           "✈",
           "Vé máy bay VN112.pdf",
@@ -2003,7 +2367,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         ],
         ["▣", "Bảo hiểm du lịch.pdf", "Bảo hiểm · Chưa export cùng Trip Brief"],
       ];
-      const tasks = [
+      let tasks = [
         ["Chốt vé máy bay", "Huy Nguyen", true, "Lưu vé điện tử vào Documents.", "Hoàn thành"],
         ["Đặt phòng khách sạn", "Minh Long", true, "Xác nhận mã booking và giờ check-in.", "Hoàn thành"],
         ["Mua bảo hiểm du lịch", "Huy Nguyen", false, "Chọn gói bảo hiểm cho toàn nhóm.", "Chưa bắt đầu"],
@@ -2011,7 +2375,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         ["Tạo danh sách đồ cần mang", "Khanh Vy", false, "Chia sẻ danh sách vào nhóm trước khi đi.", "Chưa bắt đầu"],
         ["Kiểm tra thời tiết & phương án mưa", "Huy Nguyen", false, "Cập nhật phương án thay thế nếu có mưa.", "Chưa bắt đầu"],
       ];
-      const plansByDay = [
+      let plansByDay = [
         [
           [
             "06:30",
@@ -2080,6 +2444,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           null,
           "2026-10-19",
           "2026-10-22",
+          "da-nang",
         ],
         [
           "Hà Nội food tour",
@@ -2092,32 +2457,56 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           null,
           "2026-12-04",
           "2026-12-06",
-        ],
-        [
-          "Phú Quốc nghỉ dưỡng",
-          "Phú Quốc",
-          "12–15 tháng 2, 2027",
-          "10 người",
-          "Đã hoàn tất",
-          "20000000",
-          ["Huy Nguyen", "Minh Long", "Thu An", "Khanh Vy"],
-          null,
-          "2027-02-12",
-          "2027-02-15",
+          "ha-noi",
         ],
       ];
       const covers = [
         "photo-1507525428034-b723cf961d3e",
         "photo-1506012787146-f92b2d7d6d96",
-        "photo-1506794778202-cad84cf45f1d",
       ];
       let activeTrip = 0;
       let editingTripIndex = null;
       let editingOpinionIndex = null;
       let googleForm = null;
       const defaultMembers = ["Huy Nguyen", "Minh Long", "Thu An", "Khanh Vy"];
+      const workspaces = {
+        "da-nang": { members: trips[0][6], opinions, notifications, expenses, documents, tasks, plansByDay, googleForm },
+        "ha-noi": {
+          members: ["Huy Nguyen", "Ngọc Anh", "Tuấn Minh", "Mai Linh", "Quang Huy"],
+          opinions: [["Ngọc Anh", "Ưu tiên tour ẩm thực khu phố cổ.", "Hoạt động", "Mới nhận"]],
+          notifications: [],
+          expenses: [["Ăn trưa bún chả", 450000, "Ngọc Anh", "2026-12-04", "Chia 5 người", ["Huy Nguyen", "Ngọc Anh", "Tuấn Minh", "Mai Linh", "Quang Huy"]], ["Vé food tour", 1000000, "Huy Nguyen", "2026-12-04", "Chia 5 người", ["Huy Nguyen", "Ngọc Anh", "Tuấn Minh", "Mai Linh", "Quang Huy"]]],
+          documents: [["▣", "Lịch food tour.pdf", "Lịch ăn uống · 04–06 Dec 2026"]],
+          tasks: [["Đặt bàn bún chả", "Ngọc Anh", false, "Xác nhận suất ăn cho cả nhóm.", "Chưa bắt đầu"], ["Chốt food tour", "Huy Nguyen", true, "Đã đặt cọc tour phố cổ.", "Hoàn thành"]],
+          plansByDay: [[["09:00", "Phố cổ Hà Nội", "Bắt đầu food tour tại Hồ Gươm"], ["12:00", "Bún chả Hàng Mành", "Đặt bàn cho 5 người"]], [["10:00", "Cà phê trứng", "Phố cổ Hà Nội"]], [["09:30", "Mua quà đặc sản", "Chợ Đồng Xuân"]], []],
+          googleForm: null,
+        },
+      };
+      function getWorkspace(tripId) { return workspaces[tripId]; }
+      function getActiveWorkspace() { return getWorkspace(trips[activeTrip][10]); }
+      function bindActiveWorkspace() {
+        const workspace = getActiveWorkspace();
+        opinions = workspace.opinions;
+        notifications = workspace.notifications;
+        expenses = workspace.expenses;
+        documents = workspace.documents;
+        tasks = workspace.tasks;
+        plansByDay = workspace.plansByDay;
+        plans = plansByDay[activePlanDay] || [];
+        googleForm = workspace.googleForm;
+      }
+      function createEmptyWorkspace(members) {
+        return { members, opinions: [], notifications: [], expenses: [], documents: [], tasks: [], plansByDay: [[], [], [], []], googleForm: null };
+      }
       let editingPlanIndex = null;
-      const activeMembers = () => trips[activeTrip][6] || defaultMembers;
+      const exportOptions = {
+        plan: true,
+        checklist: true,
+        expenses: true,
+        settlement: true,
+        documents: false,
+      };
+      const activeMembers = () => getActiveWorkspace().members || defaultMembers;
       const initials = (name) =>
         name
           .split(" ")
@@ -2140,8 +2529,123 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
               "'": "&#39;",
             })[c],
         );
+      const formatCurrency = (amount) =>
+        `${Number(amount || 0).toLocaleString("vi-VN")}₫`;
+      const formatExpenseDate = (date) => {
+        if (!date) return "Chưa chọn ngày";
+        const [year, month, day] = date.split("-");
+        return `${day}/${month}/${year}`;
+      };
+      function getTripPlanDays() {
+        const trip = trips[activeTrip];
+        const start = new Date(`${trip[8]}T12:00:00`);
+        const end = new Date(`${trip[9]}T12:00:00`);
+        const weekdays = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+        const days = [];
+        for (const date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
+          days.push({ label: `${weekdays[date.getDay()]} · ${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}`, value: days.length });
+        }
+        return days;
+      }
+      function renderPlanTabs() {
+        const days = getTripPlanDays();
+        if (activePlanDay >= days.length) activePlanDay = 0;
+        plans = plansByDay[activePlanDay] || [];
+        document.querySelector("#plan-tabs").innerHTML = days
+          .map((day) => `<button class="${day.value === activePlanDay ? "active" : ""}" onclick="selectPlanDay(${day.value})">${safe(day.label)}</button>`)
+          .join("");
+      }
+      const getExpenseSplit = (expense) => {
+        const members = activeMembers();
+        const allocation = Object.fromEntries(members.map((member) => [member, 0]));
+        const recipients = (expense[5] || []).filter((member) => member in allocation);
+        if (!recipients.length) return allocation;
+        const amount = Number(expense[1]) || 0;
+        const share = Math.floor(amount / recipients.length);
+        recipients.forEach((member) => (allocation[member] += share));
+        if (expense[2] in allocation) {
+          allocation[expense[2]] += amount - share * recipients.length;
+        }
+        return allocation;
+      };
+      function toggleExportOption(option, checked) {
+        exportOptions[option] = checked;
+        updateExportPreview();
+      }
+      function updateExportPreview() {
+        const preview = document.querySelector("#export-preview");
+        const entries = [];
+        const totalExpense = expenses.reduce(
+          (total, expense) => total + (Number(expense[1]) || 0),
+          0,
+        );
+        if (exportOptions.plan) {
+          entries.push(["Trip plan", `${plansByDay.flat().length} hoạt động`]);
+        }
+        if (exportOptions.checklist) {
+          const completed = tasks.filter((task) => task[2]).length;
+          entries.push(["Checklist", `${completed}/${tasks.length} việc hoàn thành`]);
+        }
+        if (exportOptions.expenses) {
+          entries.push(["Tổng chi phí", `${formatCurrency(totalExpense)} / ${formatCurrency(trips[activeTrip][5])}`]);
+        }
+        if (exportOptions.settlement) {
+          entries.push(["Quyết toán", `${activeMembers().length} member`]);
+        }
+        if (exportOptions.documents) {
+          entries.push(["Documents", `${documents.length} tài liệu`]);
+        }
+        preview.innerHTML = `<span><b>Nội dung đã chọn</b><b>${entries.length} phần</b></span>${entries.length ? entries.map(([label, value]) => `<span><b>${label}</b><b>${value}</b></span>`).join("") : '<p class="hint">Chọn ít nhất một nội dung để tạo Trip Brief.</p>'}`;
+      }
+      function createTripBrief() {
+        const selectedCount = Object.values(exportOptions).filter((value) => value === true).length;
+        if (!selectedCount) {
+          showToast("Hãy chọn ít nhất một nội dung để export.");
+          return;
+        }
+        openExportPdfPreview();
+      }
+      function openExportPdfPreview() {
+        const trip = trips[activeTrip];
+        const totalExpense = expenses.reduce(
+          (total, expense) => total + (Number(expense[1]) || 0),
+          0,
+        );
+        const sections = [];
+        if (exportOptions.plan) {
+          const activities = plansByDay
+            .flatMap((day, dayIndex) => day.map((activity) => ({ activity, dayIndex })));
+          sections.push(`<section class="pdf-section"><small>Itinerary</small><h2>Lịch trình</h2>${activities.map(({ activity, dayIndex }) => `<div class="pdf-item"><div><b>Ngày ${dayIndex + 1} · ${safe(activity[0])} — ${safe(activity[1])}</b><p>${safe(activity[2])}</p></div></div>`).join("")}</section>`);
+        }
+        if (exportOptions.checklist) {
+          sections.push(`<section class="pdf-section"><small>Preparation</small><h2>Checklist</h2>${tasks.map((task) => `<div class="pdf-item"><div><b>${task[2] ? "✓" : "○"} ${safe(task[0])}</b><p>${safe(task[1])}${task[3] ? ` · ${safe(task[3])}` : ""}</p></div><b>${task[2] ? "Hoàn thành" : "Đang làm"}</b></div>`).join("")}</section>`);
+        }
+        if (exportOptions.expenses) {
+          sections.push(`<section class="pdf-section"><small>Budget</small><h2>Chi phí</h2>${expenses.map((expense) => `<div class="pdf-item"><div><b>${safe(expense[0])}</b><p>${safe(expense[2])} thanh toán · Chia cho: ${safe((expense[5] || []).join(", "))}</p></div><b>${formatCurrency(expense[1])}</b></div>`).join("")}</section>`);
+        }
+        if (exportOptions.settlement) {
+          const settlement = Object.fromEntries(activeMembers().map((member) => [member, { assigned: 0, paid: 0 }]));
+          expenses.forEach((expense) => {
+            const allocation = getExpenseSplit(expense);
+            activeMembers().forEach((member) => (settlement[member].assigned += allocation[member]));
+            if (settlement[expense[2]]) settlement[expense[2]].paid += Number(expense[1]) || 0;
+          });
+          sections.push(`<section class="pdf-section"><small>Settlement</small><h2>Quyết toán member</h2>${activeMembers().map((member) => { const item = settlement[member]; const balance = item.assigned - item.paid; return `<div class="pdf-item"><div><b>${safe(member)}</b><p>Chi phí ${formatCurrency(item.assigned)} · Đã chi ${formatCurrency(item.paid)}</p></div><b>${balance > 0 ? `Cần trả ${formatCurrency(balance)}` : balance < 0 ? `Nhận lại ${formatCurrency(Math.abs(balance))}` : "Đã cân bằng"}</b></div>`; }).join("")}</section>`);
+        }
+        if (exportOptions.documents) {
+          sections.push(`<section class="pdf-section"><small>Trip vault</small><h2>Documents</h2>${documents.map((documentItem) => `<div class="pdf-item"><div><b>${safe(documentItem[1])}</b><p>${safe(documentItem[2])}</p></div></div>`).join("")}</section>`);
+        }
+        document.querySelector("#export-pdf-preview").innerHTML = `<div class="pdf-brand"><span class="brand-mark">✦</span> DiDiEms</div><h1 class="pdf-title">${safe(trip[0])}</h1><p class="pdf-subtitle">${safe(trip[1])} · ${safe(trip[2])}</p><div class="pdf-summary"><div><small>Member</small><b>${safe(trip[3])}</b></div><div><small>Ngân sách dự kiến</small><b>${formatCurrency(trip[5])}</b></div><div><small>Tổng đã chi</small><b>${formatCurrency(totalExpense)}</b></div></div>${sections.join("") || '<p class="hint">Chưa chọn nội dung để đưa vào Trip Brief.</p>'}<div class="pdf-footer">DiDiEms · Bản xem trước PDF · Xuất ngày ${new Date().toLocaleDateString("vi-VN")}</div>`;
+        document.querySelector("#export-pdf-modal").classList.add("show");
+      }
+      function closeExportPdfPreview() {
+        document.querySelector("#export-pdf-modal").classList.remove("show");
+      }
+      function downloadExportPdf() {
+        showToast("Đã chuẩn bị file Trip Brief PDF (demo).");
+      }
       function updateCountdown() {
-        const target = new Date("2026-10-19T06:30:00"),
+        const target = new Date(`${trips[activeTrip][8]}T06:30:00`),
           diff = target - Date.now(),
           el = document.querySelector("#countdown");
         if (diff <= 0) {
@@ -2161,6 +2665,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         }
         document.querySelector("#login-screen").style.display = "none";
         document.querySelector("#app-shell").classList.remove("hidden");
+        showView("trips");
         showToast(
           provider ? "Đã đăng nhập Google (demo)." : "Chào mừng trở lại, Huy!",
         );
@@ -2196,6 +2701,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         }
         document.querySelector("#register-screen").style.display = "none";
         document.querySelector("#app-shell").classList.remove("hidden");
+        showView("trips");
         showToast(provider ? "Đã đăng ký với Google (demo)." : "Đã tạo tài khoản thành công.");
       }
       function logout() {
@@ -2215,7 +2721,9 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
                 : `editItem('${kind}',${i})`;
         return `<span class="row-actions"><button class="small-btn" onclick="${edit}">Sửa</button><button class="small-btn delete" onclick="deleteItem('${kind}',${i})">Xóa</button></span>`;
       }
+      // Main renderer: refreshes every active-trip view and its derived values.
       function render() {
+        renderPlanTabs();
         const trip = trips[activeTrip],
           cover = `https://images.unsplash.com/${covers[activeTrip % covers.length]}?auto=format&fit=crop&w=1300&q=85`;
         document.querySelector("#current-trip").textContent = trip[0];
@@ -2242,8 +2750,66 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         document.querySelector("#expense-list").innerHTML = expenses
           .map(
             (x, i) =>
-              `<div class="expense-row"><span class="doc-icon">₫</span><div><strong>${safe(x[0])}</strong><small>${safe(x[1])}</small></div><span class="amount">${safe(x[2])}</span>${actions("expense", i)}</div>`,
+              `<div class="expense-row" style="cursor:pointer" onclick="openExpenseModal(${i})"><span class="doc-icon">₫</span><div><strong>${safe(x[0])}</strong><small>${safe(formatExpenseDate(x[3]))} · ${safe(x[2])} thanh toán${x[4] ? ` · ${safe(x[4])}` : ""} · Chia cho: ${safe((x[5] || []).join(", ") || "Chưa chọn")}</small></div><span class="amount">${formatCurrency(x[1])}</span></div>`,
           )
+          .join("");
+        const totalExpense = expenses.reduce((total, expense) => total + Number(expense[1] || 0), 0);
+        document.querySelector("#total-expense").textContent = formatCurrency(totalExpense);
+        const paidByMember = expenses.reduce((totals, expense) => {
+          const owner = expense[2];
+          totals[owner] = (totals[owner] || 0) + Number(expense[1] || 0);
+          return totals;
+        }, {});
+        document.querySelector("#expense-payer-summary").innerHTML = activeMembers()
+          .filter((member) => paidByMember[member] > 0)
+          .map(
+            (member) =>
+              `<div class="owed"><span>${safe(member)} đã trả</span><span>${formatCurrency(paidByMember[member])}</span></div>`,
+          )
+          .join("");
+        document.querySelector("#remaining-budget").textContent = formatCurrency(
+          Math.max(0, Number(trips[activeTrip][5]) - totalExpense),
+        );
+        const tripBudget = Number(trips[activeTrip][5]) || 0;
+        const spentPercent = tripBudget
+          ? Math.round((totalExpense / tripBudget) * 100)
+          : 0;
+        const isOverBudget = totalExpense > tripBudget;
+        document.querySelector("#expense-budget-progress-label").textContent =
+          isOverBudget
+            ? `Vượt ${spentPercent - 100}% ngân sách dự kiến`
+            : `Đã dùng ${spentPercent}% ngân sách dự kiến`;
+        document.querySelector("#expense-budget-total").textContent =
+          `${formatCurrency(totalExpense)} / ${formatCurrency(tripBudget)}`;
+        document.querySelector("#expense-budget-progress").style.width =
+          `${Math.min(spentPercent, 100)}%`;
+        document
+          .querySelector(".expense-summary")
+          .classList.toggle("over-budget", isOverBudget);
+        const settlement = Object.fromEntries(
+          activeMembers().map((member) => [member, { assigned: 0, paid: 0 }]),
+        );
+        expenses.forEach((expense) => {
+          const amount = Number(expense[1]) || 0;
+          const owner = expense[2];
+          const allocation = getExpenseSplit(expense);
+          if (settlement[owner]) settlement[owner].paid += amount;
+          activeMembers().forEach((member) => {
+            settlement[member].assigned += allocation[member];
+          });
+        });
+        document.querySelector("#settlement-list").innerHTML = activeMembers()
+          .map((member) => {
+            const item = settlement[member];
+            const balance = item.assigned - item.paid;
+            const balanceText = balance > 0
+              ? `Cần trả ${formatCurrency(balance)}`
+              : balance < 0
+                ? `Nhận lại ${formatCurrency(Math.abs(balance))}`
+                : "Đã cân bằng";
+            const balanceClass = balance > 0 ? "owes" : balance < 0 ? "receives" : "";
+            return `<div class="settlement-row"><div class="settlement-member"><span class="avatar">${initials(member)}</span>${safe(member)}</div><button class="settlement-value settlement-link assigned" onclick="openSettlementDetails('assigned', ${safe(JSON.stringify(member))})">${formatCurrency(item.assigned)}</button><button class="settlement-value settlement-link paid" onclick="openSettlementDetails('paid', ${safe(JSON.stringify(member))})">${formatCurrency(item.paid)}</button><span class="settlement-balance ${balanceClass}">${balanceText}</span></div>`;
+          })
           .join("");
         document.querySelector("#document-list").innerHTML = documents
           .map(
@@ -2270,18 +2836,29 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         document.querySelector("#checklist-task-progress").style.width =
           `${taskProgress}%`;
         document.querySelector("#overview-task-list").innerHTML = tasks
+          .map((task, index) => ({ task, index }))
+          .filter(({ task }) => !task[2])
           .slice(0, 4)
           .map(
-            (x, i) =>
-              `<div class="check-row"><input type="checkbox" ${x[2] ? "checked" : ""} onchange="toggleTask(${i})"><label class="${x[2] ? "done" : ""}">${safe(x[0])}</label><span class="assignee-name">${safe(x[1])}</span></div>`,
+            ({ task, index }) =>
+              `<div class="check-row"><input type="checkbox" onchange="toggleTask(${index})"><label>${safe(task[0])}</label><span class="assignee-name">${safe(task[1])}</span></div>`,
           )
-          .join("");
-        document.querySelector("#plan-list").innerHTML = plans
+          .join("") || '<p class="hint">Đã hoàn thành tất cả checklist.</p>';
+        document.querySelector("#plan-list").innerHTML = [...plans]
+          .sort((a, b) => a[0].localeCompare(b[0]))
           .map(
             (x, i) =>
               `<div class="plan-card" style="cursor:pointer" onclick="openPlanDetail(${i})"><span class="time-chip">${safe(x[0])}</span><div><b>${safe(x[1])}</b><p>${safe(x[2])}</p></div></div>`,
           )
           .join("");
+        document.querySelector("#overview-timeline").innerHTML = plansByDay
+          .flatMap((day, dayIndex) => day.map((activity) => ({ activity, dayIndex })))
+          .slice(0, 3)
+          .map(
+            ({ activity, dayIndex }) =>
+              `<div class="event"><span class="event-dot"></span><time>Ngày ${dayIndex + 1}<br />${safe(activity[0])}</time><div><h3>${safe(activity[1])}</h3><p>${safe(activity[2])}</p></div></div>`,
+          )
+          .join("") || '<p class="hint">Chưa có hoạt động nào trong lịch trình.</p>';
       }
       function showToast(message) {
         const t = document.querySelector("#toast");
@@ -2341,9 +2918,10 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         const title = document.querySelector("#google-form-title").value.trim();
         googleForm = {
           title,
-          link: "https://forms.gle/trippilot-demo",
+          link: "https://forms.gle/didiems-demo",
           accepting: true,
         };
+        getActiveWorkspace().googleForm = googleForm;
         closeGoogleFormModal();
         updateGoogleFormUI();
         showToast(`Đã tạo Google Form demo: ${title}`);
@@ -2431,17 +3009,111 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         );
       }
       function addExpense() {
-        const name = ask("Tên khoản chi");
-        if (!name) return;
-        const amount = ask("Số tiền", "1.000.000₫");
-        if (!amount) return;
-        expenses.unshift([
-          name,
-          "Hôm nay · Huy thanh toán · chia 8 người",
-          amount,
-        ]);
+        openExpenseModal();
+      }
+      let editingExpenseIndex = null;
+      function openExpenseModal(index = null) {
+        editingExpenseIndex = index;
+        const form = document.querySelector("#expense-editor");
+        const payer = document.querySelector("#expense-payer");
+        const splitMembers = document.querySelector("#expense-split-members");
+        payer.innerHTML = activeMembers()
+          .map((member) => `<option value="${safe(member)}">${safe(member)}</option>`)
+          .join("");
+        form.reset();
+        document.querySelector("#expense-modal-title").textContent =
+          index === null ? "Thêm khoản chi" : "Chi tiết khoản chi";
+        document.querySelector("#expense-delete").style.display =
+          index === null ? "none" : "inline-block";
+        if (index !== null) {
+          const expense = expenses[index];
+          document.querySelector("#expense-name").value = expense[0];
+          document.querySelector("#expense-amount").value = String(expense[1]);
+          payer.value = expense[2];
+          document.querySelector("#expense-date").value = expense[3];
+          document.querySelector("#expense-note").value = expense[4] || "";
+          splitMembers.innerHTML = activeMembers()
+            .map(
+              (member) =>
+                `<label><input type="checkbox" value="${safe(member)}" ${(expense[5] || []).includes(member) ? "checked" : ""} />${safe(member)}</label>`,
+            )
+            .join("");
+        } else {
+          payer.value = "Huy Nguyen";
+          document.querySelector("#expense-date").value = new Date().toISOString().slice(0, 10);
+          splitMembers.innerHTML = activeMembers()
+            .map(
+              (member) =>
+                `<label><input type="checkbox" value="${safe(member)}" checked />${safe(member)}</label>`,
+            )
+            .join("");
+        }
+        document.querySelector("#expense-modal").classList.add("show");
+        document.querySelector("#expense-name").focus();
+      }
+      function closeExpenseModal() {
+        document.querySelector("#expense-modal").classList.remove("show");
+        editingExpenseIndex = null;
+      }
+      function submitExpense(event) {
+        event.preventDefault();
+        const value = (id) => document.querySelector(id).value.trim();
+        const splitMembers = Array.from(
+          document.querySelectorAll("#expense-split-members input:checked"),
+          (input) => input.value,
+        );
+        const expense = [
+          value("#expense-name"),
+          Number(value("#expense-amount")),
+          value("#expense-payer"),
+          value("#expense-date"),
+          value("#expense-note"),
+          splitMembers,
+        ];
+        const isNew = editingExpenseIndex === null;
+        if (isNew) expenses.unshift(expense);
+        else expenses[editingExpenseIndex] = expense;
+        closeExpenseModal();
         render();
-        showToast("Đã thêm khoản chi.");
+        showToast(isNew ? "Đã thêm khoản chi." : "Đã cập nhật khoản chi.");
+      }
+      function deleteExpenseFromModal() {
+        if (editingExpenseIndex === null || !confirm("Xóa khoản chi này?")) return;
+        expenses.splice(editingExpenseIndex, 1);
+        closeExpenseModal();
+        render();
+        showToast("Đã xóa khoản chi.");
+      }
+      function openSettlementDetails(kind, member) {
+        const isAssigned = kind === "assigned";
+        const items = expenses
+          .map((expense) => ({
+            expense,
+            amount: isAssigned
+              ? getExpenseSplit(expense)[member]
+              : expense[2] === member
+                ? Number(expense[1]) || 0
+                : 0,
+          }))
+          .filter((item) => item.amount > 0);
+        document.querySelector("#settlement-detail-title").textContent =
+          `${isAssigned ? "Chi phí" : "Đã chi"} của ${member}`;
+        document.querySelector("#settlement-detail-description").textContent =
+          isAssigned
+            ? "Các khoản member này được chọn để chia tiền."
+            : "Các khoản member này đã thanh toán với vai trò owner.";
+        document.querySelector("#settlement-detail-list").innerHTML = items.length
+          ? items
+              .map(
+                ({ expense, amount }) =>
+                  `<div class="expense-row"><span class="doc-icon">₫</span><div><strong>${safe(expense[0])}</strong><small>${safe(formatExpenseDate(expense[3]))} · ${isAssigned ? `Chia cho: ${safe((expense[5] || []).join(", "))}` : "Owner thanh toán"}</small></div><span class="amount">${formatCurrency(amount)}</span></div>`,
+              )
+              .join("")
+          : '<p class="hint">Chưa có khoản chi tương ứng.</p>';
+        document.querySelector("#settlement-detail-modal").classList.add("show");
+      }
+      function closeSettlementDetails() {
+        document.querySelector("#settlement-detail-modal").classList.remove("show");
       }
       let editingTask = null;
       function addTask() {
@@ -2501,9 +3173,6 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
       function selectPlanDay(day) {
         activePlanDay = day;
         plans = plansByDay[day];
-        document
-          .querySelectorAll("#plan-tabs button")
-          .forEach((button, i) => button.classList.toggle("active", i === day));
         render();
       }
       function openPlanModal() {
@@ -2518,6 +3187,9 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           "Thêm vào lịch trình";
         document.querySelector("#plan-delete").style.display = "none";
         document.querySelector("#plan-activity-day").disabled = false;
+        document.querySelector("#plan-activity-day").innerHTML = getTripPlanDays()
+          .map((day) => `<option value="${day.value}">${safe(day.label)}</option>`)
+          .join("");
         document.querySelector("#plan-activity-day").value = activePlanDay;
         document.querySelector("#plan-activity-time").value = "10:00";
         document.querySelector("#plan-modal").classList.add("show");
@@ -2537,6 +3209,9 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           "Lưu thay đổi";
         document.querySelector("#plan-delete").style.display = "inline-block";
         document.querySelector("#plan-activity-day").disabled = true;
+        document.querySelector("#plan-activity-day").innerHTML = getTripPlanDays()
+          .map((day) => `<option value="${day.value}">${safe(day.label)}</option>`)
+          .join("");
         set("#plan-activity-day", activePlanDay);
         set("#plan-activity-time", activity[0]);
         set("#plan-activity-title", activity[1]);
@@ -2716,6 +3391,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           .querySelector("#mobile-sidebar-backdrop")
           .classList.remove("show");
       }
+      // Navigation changes the visible view without changing the active trip.
       function showView(id) {
         document
           .querySelectorAll(".view")
@@ -2750,10 +3426,14 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         document.querySelector("#trip-hero").style.backgroundImage =
           `linear-gradient(100deg,rgba(255,245,223,.96) 0%,rgba(255,245,223,.85) 55%,rgba(255,245,223,.1)),url('${local}')`;
       }
+      // Trip switching rebinds all mutable collections to the selected workspace.
       function openTrip(i) {
         activeTrip = i;
+        activePlanDay = 0;
+        bindActiveWorkspace();
         render();
         updateTripSummary();
+        updateCountdown();
         applyLocalCover();
         showView("overview");
         showToast("Đã mở workspace " + trips[i][0] + ".");
@@ -2822,12 +3502,15 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
             localCover,
             start,
             end,
+            editingTripIndex !== null ? trips[editingTripIndex][10] : `trip-${Date.now()}`,
           ];
         if (editingTripIndex !== null) {
           const previous = trips[editingTripIndex];
           tripData[7] = localCover || previous[7];
           trips[editingTripIndex] = tripData;
           activeTrip = editingTripIndex;
+          getActiveWorkspace().members = memberNames;
+          bindActiveWorkspace();
           closeTripModal();
           event.target.reset();
           render();
@@ -2837,6 +3520,7 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
           return;
         }
         trips.unshift(tripData);
+        workspaces[tripData[10]] = createEmptyWorkspace(memberNames);
         closeTripModal();
         event.target.reset();
         openTrip(0);
@@ -2891,18 +3575,12 @@ Chọn hoạt động và ghi chú để leader tổng hợp.</textarea
         renderTripCollection();
         renderOpinions();
         renderNotifications();
+        updateExportPreview();
       };
       document
         .querySelectorAll("[data-view]")
         .forEach((btn) =>
           btn.addEventListener("click", () => showView(btn.dataset.view)),
-        );
-      document
-        .querySelectorAll(".export-button")
-        .forEach((btn) =>
-          btn.addEventListener("click", () =>
-            showToast("PDF demo đang được tạo… (mock interaction)"),
-          ),
         );
       render();
       updateCountdown();
