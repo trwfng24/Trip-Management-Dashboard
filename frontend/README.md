@@ -1,38 +1,29 @@
-# .
+# DiDiEms frontend
 
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Recommended Browser Setup
-
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+## Cài đặt
 
 ```sh
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
+cp .env.example .env.local
 npm run dev
 ```
 
-### Compile and Minify for Production
+Điền hai biến trong `.env.local` bằng URL dự án Supabase và publishable key của bạn:
+
+```dotenv
+VITE_SUPABASE_URL="https://your-project-ref.supabase.co"
+VITE_SUPABASE_PUBLISHABLE_KEY="your-publishable-key"
+```
+
+## Supabase Auth
+
+- Trong **Authentication → Providers**, bật Email và Google nếu dùng các cách đăng nhập tương ứng.
+- Trong **Authentication → URL Configuration**, thêm URL local của Vite (thường là `http://localhost:5173`) vào **Redirect URLs**. URL production cũng phải được thêm tại đây.
+- Khi đăng ký bằng email, ứng dụng hiển thị trạng thái xác nhận nếu Supabase yêu cầu xác thực email. Cấu hình mẫu email và URL redirect xác nhận thực hiện trong Supabase.
+
+## Lệnh thường dùng
 
 ```sh
+npm test
 npm run build
 ```

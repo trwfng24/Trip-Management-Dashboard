@@ -3,9 +3,7 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import { auth } from './lib/auth'
+import { bootstrap } from './bootstrap'
 
-const app = createApp(App)
-
-app.use(router)
-
-app.mount('#app')
+bootstrap({ App, auth, createApp, router })
