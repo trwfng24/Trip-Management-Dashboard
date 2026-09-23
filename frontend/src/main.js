@@ -5,5 +5,6 @@ import App from './App.vue'
 import router from './router'
 import { auth } from './lib/auth'
 import { bootstrap } from './bootstrap'
+import { vuetify } from './plugins/vuetify'
 
-bootstrap({ App, auth, createApp, router })
+bootstrap({ App, auth, createApp, router, ui: vuetify })

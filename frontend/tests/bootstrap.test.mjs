@@ -52,3 +52,23 @@ test('bootstrap disposes the auth subscription when Vue unmounts', async () => {
 
   assert.equal(disposeCalls, 1)
 })
+
+test('bootstrap installs the UI plugin before mounting the application', async () => {
+  const events = []
+
+  await bootstrap({
+    App: {},
+    auth: { async initialize() {} },
+    router: { name: 'trip-router' },
+    ui: { name: 'vuetify' },
+    createApp() {
+      return {
+        use(plugin) { events.push(`use:${plugin.name}`) },
+        mount() { events.push('mount') },
+        onUnmount() {},
+      }
+    },
+  })
+
+  assert.deepEqual(events, ['use:trip-router', 'use:vuetify', 'mount'])
+})
