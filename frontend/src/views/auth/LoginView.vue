@@ -1,10 +1,10 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import AuthLayout from '../components/AuthLayout.vue'
-import { auth } from '../lib/auth'
-import { getAuthErrorMessage } from '../lib/authErrors'
-import { validateLogin } from '../lib/authValidation'
+import AuthLayout from '../../components/AuthLayout.vue'
+import { auth } from '../../lib/auth.js'
+import { getAuthErrorMessage } from '../../lib/authErrors.js'
+import { validateLogin } from '../../lib/authValidation.js'
 
 const router = useRouter()
 const route = useRoute()

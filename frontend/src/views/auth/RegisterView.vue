@@ -1,10 +1,10 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import AuthLayout from '../components/AuthLayout.vue'
-import { auth } from '../lib/auth'
-import { getAuthErrorMessage } from '../lib/authErrors'
-import { validateRegistration } from '../lib/authValidation'
+import AuthLayout from '../../components/AuthLayout.vue'
+import { auth } from '../../lib/auth.js'
+import { getAuthErrorMessage } from '../../lib/authErrors.js'
+import { validateRegistration } from '../../lib/authValidation.js'
 
 const router = useRouter()
 const form = reactive({ displayName: '', email: '', password: '', confirmation: '' })
