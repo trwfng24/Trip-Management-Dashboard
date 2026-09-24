@@ -1,57 +1,3 @@
-<script setup>
-import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import AuthLayout from '../../components/AuthLayout.vue'
-import { useToast } from '@/composables/useToast'
-import { auth } from '../../lib/auth.js'
-import { getAuthErrorMessage } from '../../lib/authErrors.js'
-import { validateRegistration } from '../../lib/authValidation.js'
-import { messages } from '@/lib/messages'
-
-const router = useRouter()
-const toast = useToast()
-const form = reactive({ displayName: '', email: '', password: '', confirmation: '' })
-const errors = ref({})
-const serverError = ref('')
-const confirmationSent = ref(false)
-const isSubmitting = ref(false)
-const isPasswordVisible = ref(false)
-const isConfirmationVisible = ref(false)
-
-async function submit() {
-  errors.value = validateRegistration(form)
-  serverError.value = ''
-  if (Object.keys(errors.value).length) return
-  isSubmitting.value = true
-  try {
-    const result = await auth.signUp(form)
-    if (result.session) {
-      toast.success(messages.auth.signUpSuccess)
-      await router.replace('/')
-    } else confirmationSent.value = true
-  } catch (error) {
-    serverError.value = getAuthErrorMessage(error, 'Không thể tạo tài khoản. Vui lòng thử lại.')
-  } finally {
-    isSubmitting.value = false
-  }
-}
-
-async function signInWithGoogle() {
-  serverError.value = ''
-  isSubmitting.value = true
-  try {
-    await auth.signInWithGoogle()
-  } catch (error) {
-    serverError.value = getAuthErrorMessage(
-      error,
-      'Không thể kết nối với Google. Vui lòng thử lại.',
-    )
-  } finally {
-    isSubmitting.value = false
-  }
-}
-</script>
-
 <template>
   <AuthLayout
     banner-src="/images/banner2.jpg"
@@ -169,3 +115,57 @@ async function signInWithGoogle() {
     </template>
   </AuthLayout>
 </template>
+
+<script setup>
+import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import AuthLayout from '../../components/AuthLayout.vue'
+import { useToast } from '@/common/useToast'
+import { auth } from '../../lib/auth.js'
+import { getAuthErrorMessage } from '../../lib/authErrors.js'
+import { validateRegistration } from '../../lib/authValidation.js'
+import { messages } from '@/common/messages'
+
+const router = useRouter()
+const toast = useToast()
+const form = reactive({ displayName: '', email: '', password: '', confirmation: '' })
+const errors = ref({})
+const serverError = ref('')
+const confirmationSent = ref(false)
+const isSubmitting = ref(false)
+const isPasswordVisible = ref(false)
+const isConfirmationVisible = ref(false)
+
+async function submit() {
+  errors.value = validateRegistration(form)
+  serverError.value = ''
+  if (Object.keys(errors.value).length) return
+  isSubmitting.value = true
+  try {
+    const result = await auth.signUp(form)
+    if (result.session) {
+      toast.success(messages.auth.signUpSuccess)
+      await router.replace('/')
+    } else confirmationSent.value = true
+  } catch (error) {
+    serverError.value = getAuthErrorMessage(error, 'Không thể tạo tài khoản. Vui lòng thử lại.')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+async function signInWithGoogle() {
+  serverError.value = ''
+  isSubmitting.value = true
+  try {
+    await auth.signInWithGoogle()
+  } catch (error) {
+    serverError.value = getAuthErrorMessage(
+      error,
+      'Không thể kết nối với Google. Vui lòng thử lại.',
+    )
+  } finally {
+    isSubmitting.value = false
+  }
+}
+</script>

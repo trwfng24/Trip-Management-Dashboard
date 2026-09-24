@@ -1,7 +1,3 @@
-<script setup>
-import ErrorPageLayout from '@/components/ErrorPageLayout.vue'
-</script>
-
 <template>
   <ErrorPageLayout
     status="404"
@@ -12,3 +8,7 @@ import ErrorPageLayout from '@/components/ErrorPageLayout.vue'
     :action-to="{ name: 'dashboard' }"
   />
 </template>
+
+<script setup>
+import ErrorPageLayout from '@/components/ErrorPageLayout.vue'
+</script>

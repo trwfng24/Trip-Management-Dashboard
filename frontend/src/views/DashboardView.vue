@@ -1,29 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { auth } from '../lib/auth'
-import { signOutAndRedirect } from '../lib/dashboardAuth'
-import { messages } from '@/lib/messages'
-import { useToast } from '@/composables/useToast'
-
-const router = useRouter()
-const toast = useToast()
-const isSigningOut = ref(false)
-
-async function signOut() {
-  isSigningOut.value = true
-
-  try {
-    await signOutAndRedirect({ auth, router })
-    toast.success(messages.auth.signOutSuccess)
-  } catch (error) {
-    toast.error(messages.auth.signOutFailed)
-  } finally {
-    isSigningOut.value = false
-  }
-}
-</script>
-
 <template>
   <v-app>
     <v-main class="min-h-screen bg-slate-50 p-6 sm:p-10">
@@ -49,3 +23,29 @@ async function signOut() {
     </v-main>
   </v-app>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { auth } from '../lib/auth'
+import { signOutAndRedirect } from '../lib/dashboardAuth'
+import { messages } from '@/common/messages'
+import { useToast } from '@/common/useToast'
+
+const router = useRouter()
+const toast = useToast()
+const isSigningOut = ref(false)
+
+async function signOut() {
+  isSigningOut.value = true
+
+  try {
+    await signOutAndRedirect({ auth, router })
+    toast.success(messages.auth.signOutSuccess)
+  } catch (error) {
+    toast.error(messages.auth.signOutFailed)
+  } finally {
+    isSigningOut.value = false
+  }
+}
+</script>

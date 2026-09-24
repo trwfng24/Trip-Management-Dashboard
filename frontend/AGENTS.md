@@ -46,6 +46,7 @@ that owns the concern; do not put all feature code in a view.
 ## Vue component conventions
 
 - Use Vue 3 Composition API and `<script setup>` for new SFCs.
+- Order every Vue SFC with `<template>` first and `<script setup>` after it.
 - Keep script sections ordered: imports, props/emits, constants and reactive
   state, computed values, lifecycle/watchers, then event handlers/helpers.
 - Name booleans with `is`, `has`, `can`, or `should` (for example,

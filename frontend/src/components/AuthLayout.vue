@@ -1,11 +1,3 @@
-<script setup>
-defineProps({
-  bannerSrc: { type: String, required: true },
-  bannerTitle: { type: String, required: true },
-  bannerDescription: { type: String, required: true },
-})
-</script>
-
 <template>
   <v-app>
     <v-main class="min-h-screen bg-[#f7f9f8] text-[#22384a]">
@@ -37,3 +29,11 @@ defineProps({
     </v-main>
   </v-app>
 </template>
+
+<script setup>
+defineProps({
+  bannerSrc: { type: String, required: true },
+  bannerTitle: { type: String, required: true },
+  bannerDescription: { type: String, required: true },
+})
+</script>

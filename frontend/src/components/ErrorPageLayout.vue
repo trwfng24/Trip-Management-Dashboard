@@ -1,14 +1,3 @@
-<script setup>
-defineProps({
-  actionLabel: { type: String, required: true },
-  actionTo: { type: [Object, String], required: true },
-  description: { type: String, required: true },
-  icon: { type: String, required: true },
-  status: { type: String, required: true },
-  title: { type: String, required: true },
-})
-</script>
-
 <template>
   <v-app>
     <v-main
@@ -43,3 +32,14 @@ defineProps({
     </v-main>
   </v-app>
 </template>
+
+<script setup>
+defineProps({
+  actionLabel: { type: String, required: true },
+  actionTo: { type: [Object, String], required: true },
+  description: { type: String, required: true },
+  icon: { type: String, required: true },
+  status: { type: String, required: true },
+  title: { type: String, required: true },
+})
+</script>

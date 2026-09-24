@@ -1,17 +1,3 @@
-<script setup>
-import { computed } from 'vue'
-import { useToast } from '@/composables/useToast'
-import { getToastPresentation } from '@/lib/toastPresentation'
-
-const toast = useToast()
-const active = computed(() => toast.active.value)
-const presentation = computed(() => getToastPresentation(active.value?.severity))
-
-function dismissWhenClosed(isVisible) {
-  if (!isVisible && active.value) toast.dismiss()
-}
-</script>
-
 <template>
   <v-snackbar
     :model-value="Boolean(active)"
@@ -29,3 +15,17 @@ function dismissWhenClosed(isVisible) {
     </template>
   </v-snackbar>
 </template>
+
+<script setup>
+import { computed } from 'vue'
+import { useToast } from '@/common/useToast'
+import { getToastPresentation } from '@/common/toastPresentation'
+
+const toast = useToast()
+const active = computed(() => toast.active.value)
+const presentation = computed(() => getToastPresentation(active.value?.severity))
+
+function dismissWhenClosed(isVisible) {
+  if (!isVisible && active.value) toast.dismiss()
+}
+</script>

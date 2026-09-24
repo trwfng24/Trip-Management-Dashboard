@@ -1,54 +1,3 @@
-<script setup>
-import { reactive, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import AuthLayout from '../../components/AuthLayout.vue'
-import { useToast } from '@/composables/useToast'
-import { auth } from '../../lib/auth.js'
-import { getAuthErrorMessage } from '../../lib/authErrors.js'
-import { validateLogin } from '../../lib/authValidation.js'
-import { messages } from '@/lib/messages'
-
-const router = useRouter()
-const route = useRoute()
-const toast = useToast()
-const form = reactive({ email: '', password: '' })
-const errors = ref({})
-const serverError = ref('')
-const isSubmitting = ref(false)
-const isPasswordVisible = ref(false)
-
-async function submit() {
-  errors.value = validateLogin(form)
-  serverError.value = ''
-  if (Object.keys(errors.value).length) return
-  isSubmitting.value = true
-  try {
-    await auth.signIn(form)
-    toast.success(messages.auth.signInSuccess)
-    await router.replace(typeof route.query.redirect === 'string' ? route.query.redirect : '/')
-  } catch (error) {
-    serverError.value = getAuthErrorMessage(error, 'Không thể đăng nhập. Vui lòng thử lại.')
-  } finally {
-    isSubmitting.value = false
-  }
-}
-
-async function signInWithGoogle() {
-  serverError.value = ''
-  isSubmitting.value = true
-  try {
-    await auth.signInWithGoogle()
-  } catch (error) {
-    serverError.value = getAuthErrorMessage(
-      error,
-      'Không thể kết nối với Google. Vui lòng thử lại.',
-    )
-  } finally {
-    isSubmitting.value = false
-  }
-}
-</script>
-
 <template>
   <AuthLayout
     banner-src="/images/banner1.jpg"
@@ -123,3 +72,55 @@ async function signInWithGoogle() {
     </p>
   </AuthLayout>
 </template>
+
+<script setup>
+import { reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import AuthLayout from '../../components/AuthLayout.vue'
+import { useToast } from '@/common/useToast'
+import { auth } from '../../lib/auth.js'
+import { getAuthErrorMessage } from '../../lib/authErrors.js'
+import { validateLogin } from '../../lib/authValidation.js'
+import { messages } from '@/common/messages'
+
+const router = useRouter()
+const route = useRoute()
+const toast = useToast()
+const form = reactive({ email: '', password: '' })
+const errors = ref({})
+const serverError = ref('')
+const isSubmitting = ref(false)
+const isPasswordVisible = ref(false)
+
+async function submit() {
+  errors.value = validateLogin(form)
+  serverError.value = ''
+  if (Object.keys(errors.value).length) return
+  isSubmitting.value = true
+  try {
+    await auth.signIn(form)
+    toast.success(messages.auth.signInSuccess)
+    await router.replace(typeof route.query.redirect === 'string' ? route.query.redirect : '/')
+  } catch (error) {
+    const message = getAuthErrorMessage(error, messages.auth.signInFailed)
+    serverError.value = message
+    toast.error(message)
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+async function signInWithGoogle() {
+  serverError.value = ''
+  isSubmitting.value = true
+  try {
+    await auth.signInWithGoogle()
+  } catch (error) {
+    const message = getAuthErrorMessage(error, messages.auth.googleSignInFailed)
+    serverError.value = message
+    toast.error(message)
+  } finally {
+    isSubmitting.value = false
+  }
+}
+</script>
