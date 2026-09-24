@@ -17,4 +17,22 @@ export const authRoutes = [
     component: () => import('@/views/auth/RegisterView.vue'),
     meta: { guestOnly: true },
   },
+  {
+    path: '/403',
+    name: 'forbidden',
+    component: () => import('@/views/error/ForbiddenView.vue'),
+    meta: { public: true },
+  },
+  {
+    path: '/error',
+    name: 'error',
+    component: () => import('@/views/error/ErrorView.vue'),
+    meta: { public: true },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'notFound',
+    component: () => import('@/views/error/NotFoundView.vue'),
+    meta: { public: true },
+  },
 ]
