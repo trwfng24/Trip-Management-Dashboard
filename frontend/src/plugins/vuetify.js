@@ -13,6 +13,7 @@ import {
   VForm,
   VIcon,
   VMain,
+  VSnackbar,
   VTextField,
 } from 'vuetify/components'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
@@ -29,6 +30,7 @@ const components = {
   VForm,
   VIcon,
   VMain,
+  VSnackbar,
   VTextField,
 }
 

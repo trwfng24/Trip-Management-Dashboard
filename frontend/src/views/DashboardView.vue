@@ -2,21 +2,22 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { auth } from '../lib/auth'
-import { getAuthErrorMessage } from '../lib/authErrors'
 import { signOutAndRedirect } from '../lib/dashboardAuth'
+import { messages } from '@/lib/messages'
+import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
+const toast = useToast()
 const isSigningOut = ref(false)
-const signOutError = ref('')
 
 async function signOut() {
-  signOutError.value = ''
   isSigningOut.value = true
 
   try {
     await signOutAndRedirect({ auth, router })
+    toast.success(messages.auth.signOutSuccess)
   } catch (error) {
-    signOutError.value = getAuthErrorMessage(error, 'Không thể đăng xuất. Vui lòng thử lại.')
+    toast.error(messages.auth.signOutFailed)
   } finally {
     isSigningOut.value = false
   }
@@ -39,9 +40,6 @@ async function signOut() {
             <v-chip v-if="auth.user.value" class="mt-6" color="primary" variant="tonal"
               >Đăng nhập với {{ auth.user.value.email }}</v-chip
             >
-            <v-alert v-if="signOutError" class="mt-6" type="error" variant="tonal" role="alert">{{
-              signOutError
-            }}</v-alert>
             <v-btn class="mt-8" color="primary" :loading="isSigningOut" @click="signOut"
               >Đăng xuất</v-btn
             >

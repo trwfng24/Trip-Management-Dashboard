@@ -2,11 +2,14 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AuthLayout from '../../components/AuthLayout.vue'
+import { useToast } from '@/composables/useToast'
 import { auth } from '../../lib/auth.js'
 import { getAuthErrorMessage } from '../../lib/authErrors.js'
 import { validateRegistration } from '../../lib/authValidation.js'
+import { messages } from '@/lib/messages'
 
 const router = useRouter()
+const toast = useToast()
 const form = reactive({ displayName: '', email: '', password: '', confirmation: '' })
 const errors = ref({})
 const serverError = ref('')
@@ -22,8 +25,10 @@ async function submit() {
   isSubmitting.value = true
   try {
     const result = await auth.signUp(form)
-    if (result.session) await router.replace('/')
-    else confirmationSent.value = true
+    if (result.session) {
+      toast.success(messages.auth.signUpSuccess)
+      await router.replace('/')
+    } else confirmationSent.value = true
   } catch (error) {
     serverError.value = getAuthErrorMessage(error, 'Không thể tạo tài khoản. Vui lòng thử lại.')
   } finally {

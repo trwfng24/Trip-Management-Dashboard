@@ -2,12 +2,15 @@
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AuthLayout from '../../components/AuthLayout.vue'
+import { useToast } from '@/composables/useToast'
 import { auth } from '../../lib/auth.js'
 import { getAuthErrorMessage } from '../../lib/authErrors.js'
 import { validateLogin } from '../../lib/authValidation.js'
+import { messages } from '@/lib/messages'
 
 const router = useRouter()
 const route = useRoute()
+const toast = useToast()
 const form = reactive({ email: '', password: '' })
 const errors = ref({})
 const serverError = ref('')
@@ -21,6 +24,7 @@ async function submit() {
   isSubmitting.value = true
   try {
     await auth.signIn(form)
+    toast.success(messages.auth.signInSuccess)
     await router.replace(typeof route.query.redirect === 'string' ? route.query.redirect : '/')
   } catch (error) {
     serverError.value = getAuthErrorMessage(error, 'Không thể đăng nhập. Vui lòng thử lại.')
