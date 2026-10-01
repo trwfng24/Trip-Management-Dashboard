@@ -5,5 +5,5 @@
 
 <script setup>
 import { RouterView } from 'vue-router'
-import AppToast from '@/common/AppToast.vue'
+import AppToast from '@/components/AppToast.vue'
 </script>

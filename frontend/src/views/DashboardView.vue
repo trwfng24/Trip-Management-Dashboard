@@ -1,51 +1,36 @@
 <template>
   <v-app>
-    <v-main class="min-h-screen bg-slate-50 p-6 sm:p-10">
-      <v-container class="flex min-h-[80vh] items-center justify-center">
-        <v-card class="w-full max-w-2xl" elevation="3">
-          <v-card-text class="p-8 sm:p-12">
-            <p class="text-sm font-bold uppercase tracking-[0.16em] text-teal-700">DiDiEms</p>
-            <h1 id="page-title" class="mt-3 text-4xl font-bold tracking-tight text-slate-900">
-              Trip Management Dashboard
-            </h1>
-            <p class="mt-5 text-lg leading-8 text-slate-600">
-              Không gian quản lý chuyến đi đang được xây dựng.
-            </p>
-            <v-chip v-if="auth.user.value" class="mt-6" color="primary" variant="tonal"
-              >Đăng nhập với {{ auth.user.value.email }}</v-chip
-            >
-            <v-btn class="mt-8" color="primary" :loading="isSigningOut" @click="signOut"
-              >Đăng xuất</v-btn
-            >
-          </v-card-text>
-        </v-card>
-      </v-container>
-    </v-main>
+    <div class="min-h-screen bg-[#f7f9f8] lg:flex">
+      <AppSidebar />
+      <main class="min-w-0 flex-1 p-5 pt-20 sm:p-8 sm:pt-20 lg:pt-8">
+        <section class="flex flex-wrap items-end justify-between gap-5">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-[0.14em] text-[#176b50]">Chuyến đi đang chọn</p>
+        <h2 class="mt-2 text-3xl font-bold tracking-tight text-[#22384a] sm:text-4xl">Đà Nẵng cuối tuần</h2>
+        <p class="mt-3 text-[#72808b]">20–22 tháng 9, 2026 · 6 người tham gia</p>
+      </div>
+      <span class="rounded-full bg-[#e6f7d0] px-3 py-1.5 text-sm font-bold text-[#176b50]">Đang lên kế hoạch</span>
+        </section>
+
+        <section class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <article v-for="stat in stats" :key="stat.label" class="rounded-2xl border border-[#dfe8e3] bg-white p-5 shadow-sm">
+            <p class="text-sm font-medium text-[#72808b]">{{ stat.label }}</p>
+            <p class="mt-3 text-3xl font-bold text-[#22384a]">{{ stat.value }}</p>
+            <p class="mt-1 text-sm text-[#176b50]">{{ stat.detail }}</p>
+          </article>
+        </section>
+      </main>
+    </div>
   </v-app>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { auth } from '../lib/auth'
-import { signOutAndRedirect } from '../lib/dashboardAuth'
-import { messages } from '@/common/messages'
-import { useToast } from '@/common/useToast'
+import AppSidebar from '@/components/AppSidebar.vue'
 
-const router = useRouter()
-const toast = useToast()
-const isSigningOut = ref(false)
-
-async function signOut() {
-  isSigningOut.value = true
-
-  try {
-    await signOutAndRedirect({ auth, router })
-    toast.success(messages.auth.signOutSuccess)
-  } catch (error) {
-    toast.error(messages.auth.signOutFailed)
-  } finally {
-    isSigningOut.value = false
-  }
-}
+const stats = [
+  { label: 'Ý kiến mới', value: '12', detail: 'Cần leader xem xét' },
+  { label: 'Hoạt động đã chốt', value: '8', detail: 'Trong 3 ngày' },
+  { label: 'Checklist', value: '14/20', detail: 'Đã hoàn thành' },
+  { label: 'Tổng chi phí', value: '8,4tr', detail: 'Dữ liệu fake' },
+]
 </script>
