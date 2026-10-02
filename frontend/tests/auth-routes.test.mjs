@@ -1,9 +1,21 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { authRoutes } from '../src/router/routes.js'
+import { readFile } from 'node:fs/promises'
 
-test('auth route definitions protect the dashboard and reserve login pages for guests', () => {
+const routerIndexPath = new URL('../src/router/index.js', import.meta.url)
+
+async function loadAuthRoutes() {
+  const routerSource = await readFile(routerIndexPath, 'utf8')
+  const routesMatch = routerSource.match(/export const authRoutes = (\[[\s\S]*?\n\])/)
+
+  assert.ok(routesMatch, 'index.js must export authRoutes')
+
+  return Function(`return (${routesMatch[1]})`)()
+}
+
+test('auth route definitions protect the dashboard and reserve login pages for guests', async () => {
+  const authRoutes = await loadAuthRoutes()
   const routesByName = Object.fromEntries(authRoutes.map((route) => [route.name, route]))
 
   assert.equal(routesByName.dashboard.path, '/')
@@ -14,7 +26,8 @@ test('auth route definitions protect the dashboard and reserve login pages for g
   assert.equal(routesByName.register.meta.guestOnly, true)
 })
 
-test('system error routes are public and include a catch-all not-found page', () => {
+test('system error routes are public and include a catch-all not-found page', async () => {
+  const authRoutes = await loadAuthRoutes()
   const routesByName = Object.fromEntries(authRoutes.map((route) => [route.name, route]))
 
   assert.equal(routesByName.forbidden.path, '/403')

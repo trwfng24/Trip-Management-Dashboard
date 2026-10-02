@@ -2,8 +2,6 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 
-import { authRoutes } from '../src/router/routes.js'
-
 async function readSidebarSource() {
   try {
     return await readFile(new URL('../src/components/AppSidebar.vue', import.meta.url), 'utf8')
@@ -12,7 +10,18 @@ async function readSidebarSource() {
   }
 }
 
-test('workspace navigation routes expose all fake sidebar destinations', () => {
+async function loadAuthRoutes() {
+  const routerSource = await readFile(new URL('../src/router/index.js', import.meta.url), 'utf8')
+  const routesMatch = routerSource.match(/export const authRoutes = (\[[\s\S]*?\n\])/)
+
+  assert.ok(routesMatch, 'index.js must export authRoutes')
+
+  return Function(`return (${routesMatch[1]})`)()
+}
+
+test('workspace navigation routes expose all fake sidebar destinations', async () => {
+  const authRoutes = await loadAuthRoutes()
+
   assert.deepEqual(
     authRoutes.filter((route) => route.meta.requiresAuth).map((route) => route.name),
     ['dashboard', 'opinions', 'plan', 'checklist', 'documents', 'expenses', 'export'],

@@ -46,7 +46,7 @@ import { messages } from '@/common/messages'
 import { useToast } from '@/common/useToast'
 
 const sidebarItems = [
-  { label: 'Overview', routeName: 'dashboard', icon: 'mdi-view-dashboard-outline' },
+  { label: 'Overview', routeName: 'overview', icon: 'mdi-view-dashboard-outline' },
   { label: 'Opinions', routeName: 'opinions', icon: 'mdi-message-text-outline', badge: '12' },
   { label: 'Plan', routeName: 'plan', icon: 'mdi-calendar-clock-outline' },
   { label: 'Checklist', routeName: 'checklist', icon: 'mdi-format-list-checks' },
