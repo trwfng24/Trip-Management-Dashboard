@@ -9,6 +9,7 @@ export const workspaceNavigationItems = [
 ]
 
 export function createWorkspaceBreadcrumbItems(routeName) {
+  if (routeName === 'create-trip') return [{ label: 'Workspace', to: { name: 'dashboard' } }, { label: 'Tạo chuyến đi' }]
   const activeItem = workspaceNavigationItems.find((item) => item.routeName === routeName)
 
   if (!activeItem) return [{ label: 'Workspace' }]

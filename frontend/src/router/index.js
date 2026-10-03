@@ -5,6 +5,9 @@ import { createAuthGuard, createSignedOutRedirect } from './authGuard'
 
 export const authRoutes = [
   {
+    path: '/trips/new', name: 'create-trip', component: () => import('@/views/workspace/CreateTripView.vue'), meta: { requiresAuth: true, title: 'Tạo chuyến đi' },
+  },
+  {
     path: '/',
     name: 'dashboard',
     component: () => import('@/views/workspace/Workspace.vue'),
