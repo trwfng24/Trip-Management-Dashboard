@@ -1,16 +1,10 @@
 <template>
-  <button class="fixed left-4 top-4 z-20 grid size-10 place-items-center rounded-lg bg-[#174e5c] text-white shadow-lg lg:hidden" type="button" aria-label="Open menu" @click="isSidebarOpen = true">
-    <v-icon icon="mdi-menu" size="24" />
-  </button>
-  <button v-if="isSidebarOpen" class="fixed inset-0 z-30 bg-[#102b34]/45 lg:hidden" aria-label="Close menu" @click="isSidebarOpen = false" />
+  <button v-if="isOpen" class="fixed inset-x-0 bottom-0 top-12 z-30 bg-[#183d4c]/45 lg:hidden" aria-label="Close menu" @click="emit('close')" />
   <aside
-    class="fixed inset-y-0 left-0 z-40 flex w-[250px] -translate-x-full flex-col overflow-y-auto bg-[#174e5c] px-4 py-6 text-[#f4f8ec] shadow-2xl transition-transform duration-200 lg:static lg:z-0 lg:min-h-screen lg:translate-x-0 lg:overflow-visible lg:shadow-none"
-    :class="{ 'translate-x-0': isSidebarOpen }"
+    class="fixed bottom-0 left-0 top-12 z-40 flex w-[250px] -translate-x-full flex-col overflow-y-auto bg-[#183d4c] px-4 py-6 text-[#f4f8ec] shadow-2xl transition-transform duration-200 lg:static lg:z-0 lg:min-h-[calc(100vh-3rem)] lg:translate-x-0 lg:overflow-visible lg:shadow-none"
+    :class="{ 'translate-x-0': isOpen }"
   >
-    <RouterLink class="mb-7 block" :to="{ name: 'dashboard' }" aria-label="DiDiEms - Overview">
-      <img src="/images/logo.png" class="h-auto w-[176px]" alt="DiDiEms" />
-    </RouterLink>
-    <RouterLink class="trip-switcher" :to="{ name: 'dashboard' }" @click="isSidebarOpen = false">
+    <RouterLink class="trip-switcher" :to="{ name: 'dashboard' }" @click="emit('close')">
       <span>Trip collection</span>
       <strong>Đà Nẵng cuối tuần</strong>
       <span>Manage all trips →</span>
@@ -20,30 +14,22 @@
       <RouterLink
         v-for="item in sidebarItems"
         :key="item.routeName"
-        class="flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold text-[#c3d9d0] transition hover:bg-[#dff46a]/14 hover:text-[#f4ffc2]"
-        :class="{ 'bg-[#dff46a]/14 text-[#f4ffc2]': route.name === item.routeName }"
+        class="flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold text-[#d9e8e7] transition hover:bg-[#166c74] hover:text-white"
+        :class="{ 'bg-[#166c74] text-white ring-1 ring-inset ring-[#3f7d58]': route.name === item.routeName }"
         :aria-current="route.name === item.routeName ? 'page' : undefined"
         :to="{ name: item.routeName }"
-        @click="isSidebarOpen = false"
+        @click="emit('close')"
       >
         <v-icon :icon="item.icon" size="20" />
         <span>{{ item.label }}</span>
-        <span v-if="item.badge" class="ml-auto rounded-full bg-[#dff46a] px-2 py-0.5 text-xs font-bold text-[#174e5c]">{{ item.badge }}</span>
+        <span v-if="item.badge" class="ml-auto rounded-full bg-[#e8c47c] px-2 py-0.5 text-xs font-bold text-[#183d4c]">{{ item.badge }}</span>
       </RouterLink>
     </nav>
-    <div class="side-bottom">
-      <button class="logout" type="button" @click="signOut"><v-icon icon="mdi-logout" size="20" /> Logout</button>
-    </div>
   </aside>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { auth } from '@/lib/auth'
-import { signOutAndRedirect } from '@/lib/dashboardAuth'
-import { messages } from '@/common/messages'
-import { useToast } from '@/common/useToast'
+import { useRoute } from 'vue-router'
 
 const sidebarItems = [
   { label: 'Overview', routeName: 'overview', icon: 'mdi-view-dashboard-outline' },
@@ -55,28 +41,18 @@ const sidebarItems = [
   { label: 'Export', routeName: 'export', icon: 'mdi-export-variant' },
 ]
 
-const route = useRoute()
-const router = useRouter()
-const toast = useToast()
-const isSidebarOpen = ref(false)
+defineProps({
+  isOpen: { type: Boolean, default: false },
+})
 
-async function signOut() {
-  try {
-    await signOutAndRedirect({ auth, router })
-    toast.success(messages.auth.signOutSuccess)
-  } catch {
-    toast.error(messages.auth.signOutFailed)
-  }
-}
+const emit = defineEmits(['close'])
+const route = useRoute()
 </script>
 
 <style scoped>
 .trip-switcher { width: 100%; min-height: 120px; display: flex; flex-direction: column; justify-content: flex-end; border: 2px solid rgba(255, 255, 255, 0.58); border-radius: 20px 20px 20px 6px; padding: 13px; color: #fff; text-align: left; background: linear-gradient(180deg, rgba(10, 47, 59, 0.05), rgba(10, 47, 59, 0.86)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=700&q=80') center / cover; transition: border-color 0.2s ease; }
-.trip-switcher:hover { border-color: #dff46a; }
+.trip-switcher:hover { border-color: #e8c47c; }
 .trip-switcher strong { padding-top: 5px; font-size: 15px; text-shadow: 0 1px 8px #10221d; }
 .trip-switcher span:first-child { color: #d7eee3; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
 .trip-switcher span:last-child { margin-top: 4px; color: #e6f6ef; font-size: 11px; }
-.side-bottom { margin-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.13); padding: 18px 8px 0; }
-.logout { display: flex; width: 100%; align-items: center; gap: 11px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 9px; background: transparent; padding: 9px; color: #d7eee3; text-align: left; font-size: 13px; font-weight: 800; }
-.logout:hover { border-color: #ffb098; color: #fff; }
 </style>

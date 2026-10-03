@@ -1,40 +1,8 @@
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
 import { createVuetify } from 'vuetify'
-import {
-  VAlert,
-  VApp,
-  VAvatar,
-  VBtn,
-  VCard,
-  VCardText,
-  VChip,
-  VContainer,
-  VDivider,
-  VForm,
-  VIcon,
-  VMain,
-  VSnackbar,
-  VTextField,
-} from 'vuetify/components'
+import * as components from 'vuetify/components'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
-
-const components = {
-  VAlert,
-  VApp,
-  VAvatar,
-  VBtn,
-  VCard,
-  VCardText,
-  VChip,
-  VContainer,
-  VDivider,
-  VForm,
-  VIcon,
-  VMain,
-  VSnackbar,
-  VTextField,
-}
 
 export const vuetify = createVuetify({
   components,
