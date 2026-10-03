@@ -19,7 +19,7 @@
         <template #activator="{ props: menuProps }">
           <button
             v-bind="menuProps"
-            class="sm:hidden rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e8c47c]"
+            class="sm:hidden rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e8c47c]"
             type="button"
             aria-label="Hiển thị thông tin tài khoản"
           >
@@ -52,7 +52,7 @@
       </span>
 
       <button
-        class="desktop-logout hidden items-center gap-2 rounded-lg border border-[#e8c47c]/80 px-3 py-1.5 text-sm font-bold text-[#e8c47c] transition hover:bg-[#166c74] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e8c47c] sm:flex"
+        class="desktop-logout hidden items-center gap-2 rounded-lg border border-[#e8c47c]/80 px-3 py-1.5 text-sm font-bold text-[#e8c47c] transition hover:bg-[#166c74] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e8c47c] sm:flex"
         type="button"
         :disabled="isSigningOut"
         :aria-busy="isSigningOut"
@@ -64,7 +64,7 @@
     </div>
 
     <button
-      class="grid size-8 shrink-0 place-items-center rounded-lg text-white transition hover:bg-[#166c74] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e8c47c] lg:hidden"
+      class="grid size-8 shrink-0 place-items-center rounded-lg text-white transition hover:bg-[#166c74] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e8c47c] lg:hidden"
       type="button"
       :aria-label="isSidebarOpen ? 'Đóng menu' : 'Mở menu'"
       :aria-expanded="isSidebarOpen"

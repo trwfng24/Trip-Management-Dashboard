@@ -1,7 +1,7 @@
 <template>
   <div class="p-5 sm:p-7">
     <AppBreadcrumb :items="breadcrumbItems" class="mb-5" />
-    Chức năng đang được phát triển
+    Plan
   </div>
 </template>
 
