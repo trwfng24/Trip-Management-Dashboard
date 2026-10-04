@@ -1,8 +1,9 @@
 from app.core.config import settings
-from app.db.session import engine
-from fastapi import FastAPI, HTTPException, status
-from sqlalchemy import text
-from sqlalchemy.exc import SQLAlchemyError
+from app.api.health import router as health_router
+from app.common.errors import DomainError
+from app.common.responses import ErrorResponse
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 app = FastAPI(
     title=settings.app_name,
@@ -10,18 +11,10 @@ app = FastAPI(
 )
 
 
-@app.get("/health", tags=["Health"])
-def health_check() -> dict[str, str]:
-    try:
-        with engine.connect() as connection:
-            connection.execute(text("select 1"))
-    except SQLAlchemyError:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Database unavailable",
-        )
+@app.exception_handler(DomainError)
+async def handle_domain_error(_: Request, error: DomainError) -> JSONResponse:
+    response = ErrorResponse(message=error.message, code=error.code)
+    return JSONResponse(status_code=error.status_code, content=response.model_dump())
 
-    return {
-        "status": "ok",
-        "database": "connected",
-    }
+
+app.include_router(health_router)
