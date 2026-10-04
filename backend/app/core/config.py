@@ -24,6 +24,10 @@ class Settings(BaseSettings):
 
     db_sslrootcert: str | None = None
 
+    supabase_url: str
+    supabase_publishable_key: str
+    supabase_auth_timeout_seconds: float = 5
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
