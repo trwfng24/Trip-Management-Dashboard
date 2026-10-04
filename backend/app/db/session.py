@@ -1,6 +1,9 @@
+from collections.abc import Callable, Generator
+
 from app.core.config import settings
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
+from sqlalchemy.orm import Session, sessionmaker
 
 database_url = URL.create(
     drivername="postgresql+psycopg",
@@ -25,3 +28,16 @@ engine = create_engine(
     pool_size=5,
     max_overflow=5,
 )
+
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+
+
+def get_db(session_factory: Callable[[], Session] = SessionLocal) -> Generator[Session, None, None]:
+    session = session_factory()
+    try:
+        yield session
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
